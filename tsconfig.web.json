@@ -1,0 +1,20 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": ["src/renderer/src/env.d.ts", "src/renderer/src/**/*", "src/preload/*.d.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    // types 白名单(v0.4 Task 2 · spec §6.4b):基线 @electron-toolkit/tsconfig/tsconfig.web.json
+    // 只设 lib、不设 types → web project 会自动加载 node_modules/@types/ 下**全部**包。
+    // 装 @types/chrome 后已实测:renderer 里写 chrome.downloads.* 照样通过 typecheck(运行时必崩),
+    // 等于给 ARCHITECTURE §7.2 进程职责分离开一个静默口子。显式列白名单堵住(不含 chrome)。
+    "types": ["node", "react", "react-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@renderer/*": [
+        "src/renderer/src/*"
+      ]
+    }
+  }
+}

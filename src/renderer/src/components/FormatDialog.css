@@ -1,0 +1,269 @@
+/**
+ * 格式选择对话框样式 — 1:1 复刻原型 #ov-format 专属类(prototype line 247–328)。
+ *
+ * - 公共骨架(.overlay / .dialog / .dialog-head / .dialog-body / .dialog-foot / .dialog-close / .btn)
+ *   复用全局样式(AddTaskDialog.css + buttons.css 已全局 import),此处只补格式选择专属类,避免两份骨架漂移。
+ * - 全部色值取自 tokens.css 变量;仅缩略图占位渐变 / 角标黑底白字为复刻原型既有功能色
+ *   (已批准原型 #ov-format 的确切视觉,非另造)。
+ */
+
+/* 视频信息区 */
+.vinfo {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.vthumb {
+  width: 150px;
+  height: 84px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  /* 复刻原型占位缩略图渐变(无真实缩略图时的 fallback) */
+  background: linear-gradient(135deg, #3a6ea5, #1b3a5c);
+}
+
+.vthumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vthumb .vdur {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vthumb .vplay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.vthumb .vplay svg {
+  width: 30px;
+  height: 30px;
+}
+
+.vmeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.vmeta .vtitle {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.vmeta .vfrom {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 格式列表 */
+.fmt-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.fmt-list {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.fmt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.fmt + .fmt {
+  border-top: 1px solid var(--divider);
+}
+
+.fmt:hover {
+  background: var(--bg-hover);
+}
+
+.fmt.sel {
+  background: var(--brand-subtle);
+}
+
+.fmt-empty {
+  padding: 14px;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+
+/* 单选圆点(原型 .radio) */
+.radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--text-tertiary);
+  flex-shrink: 0;
+  position: relative;
+  transition: 0.12s;
+}
+
+.fmt.sel .radio {
+  border-color: var(--brand);
+}
+
+.fmt.sel .radio::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.fmt .f-res {
+  font-size: 13.5px;
+  font-weight: 600;
+  width: 92px;
+}
+
+.fmt .f-info {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.fmt .f-size {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 仅音频开关区 */
+.audio-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 2px 2px;
+  margin-top: 14px;
+  border-top: 1px solid var(--divider);
+}
+
+.audio-opt .ao-text {
+  flex: 1;
+}
+
+.audio-opt .ao-title {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.audio-opt .ao-desc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* 开关 .switch 已抽到全局 controls.css(单一来源,spec §2.1);本组件经 tsx import 引用,视觉零变化。 */
+
+/* 字幕区(spec §5.1):仿 .audio-opt 行结构,展开区复用 .chip / .switch;全部色值取自 token,零另造 */
+.subtitle-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 2px 2px;
+  margin-top: 14px;
+  border-top: 1px solid var(--divider);
+}
+
+.subtitle-opt .so-text {
+  flex: 1;
+}
+
+.subtitle-opt .so-title {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.subtitle-opt .so-desc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* 字幕展开区:语言多选 / 目标格式 / 含自动生成 */
+.sub-expand {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider);
+}
+
+.sub-langs,
+.sub-format {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sub-format {
+  margin-top: 10px;
+}
+
+.sub-auto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.sub-auto .sub-auto-label {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 保存到预览行(诚实归类落点,spec §2.3):复用 token,绝不另造色值 */
+.save-to {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid var(--divider);
+  font-size: 12.5px;
+}
+
+.save-to .st-label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.save-to .st-dir {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}

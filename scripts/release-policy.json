@@ -1,0 +1,1013 @@
+{
+  "schemaVersion": 1,
+  "name": "DownLord release boundary policy",
+  "description": "Single source of truth for the public release tree: strip list, forbidden candidate paths, required targets, public document overlays, internal markers, link/artifact rules and the staged check catalogue. Consumed by scripts/release.mjs (tree builder, source/sync/public-history checks), scripts/release/checks.mjs (candidate assertions) and the secrets-scanner release-face adapter. stripPaths / forbiddenCandidatePaths / requiredTargets are repository-relative POSIX literals only: no globs, no regular expressions.",
+  "pathSemantics": {
+    "form": "repository-relative POSIX; a directory entry ends with '/' and matches the directory itself plus every descendant; a file entry matches exactly one path; matching is case-sensitive and a differently-cased variant of a rule path is reported as an anomaly instead of being silently kept",
+    "noPatterns": true
+  },
+  "stripPaths": [
+    {
+      "id": "S-01",
+      "kind": "directory",
+      "path": "docs/v0.1/",
+      "basis": "D14 docs/v0.*/ expanded to the v0.1-v0.4 snapshot (F-06)"
+    },
+    {
+      "id": "S-02",
+      "kind": "directory",
+      "path": "docs/v0.2/",
+      "basis": "D14 docs/v0.*/ expanded to the v0.1-v0.4 snapshot (F-06)"
+    },
+    {
+      "id": "S-03",
+      "kind": "directory",
+      "path": "docs/v0.3/",
+      "basis": "D14 docs/v0.*/ expanded to the v0.1-v0.4 snapshot (F-06)"
+    },
+    {
+      "id": "S-04",
+      "kind": "directory",
+      "path": "docs/v0.4/",
+      "basis": "D14 docs/v0.*/ expanded to the v0.1-v0.4 snapshot (F-06)"
+    },
+    {
+      "id": "S-05",
+      "kind": "directory",
+      "path": "docs/v1.0/",
+      "basis": "D14"
+    },
+    {
+      "id": "S-06",
+      "kind": "file",
+      "path": "docs/TODO.md",
+      "basis": "D14"
+    },
+    {
+      "id": "S-07",
+      "kind": "file",
+      "path": "docs/progress.md",
+      "basis": "D14"
+    },
+    {
+      "id": "S-08",
+      "kind": "file",
+      "path": "docs/CURRENT_MILESTONE.md",
+      "basis": "D14"
+    },
+    {
+      "id": "S-09",
+      "kind": "file",
+      "path": "docs/grill-templates.md",
+      "basis": "D14"
+    },
+    {
+      "id": "S-10",
+      "kind": "file",
+      "path": "prototype-downlord.html",
+      "basis": "D14"
+    },
+    {
+      "id": "S-11",
+      "kind": "directory",
+      "path": "publish/",
+      "basis": "D14; public overlays and the sync registry never enter the tree as-is"
+    },
+    {
+      "id": "S-12",
+      "kind": "directory",
+      "path": ".codex/",
+      "basis": "user decision 2026-09-15: whole directory not public; covers D-1 .codex/README.md, D-2 .codex/config.toml, the D-6 carrier .codex/scanner-internal-dispositions.json and the .codex/hooks internal tool fixtures"
+    },
+    {
+      "id": "S-13",
+      "kind": "directory",
+      "path": "docs/codex/",
+      "basis": "user decision 2026-09-15: whole directory not public; covers D-3/D-4/D-5 docs/codex/superpowers/2026-09-10-codex-context-routing-review.md, -spec.md and .md"
+    }
+  ],
+  "forbiddenCandidatePaths": [
+    {
+      "id": "F-01",
+      "kind": "file",
+      "path": "AGENTS.md",
+      "basis": "abandoned public target; never recreated, never overlaid, never registered"
+    },
+    {
+      "id": "F-02",
+      "kind": "directory",
+      "path": ".git/",
+      "basis": "candidate is a content snapshot without history"
+    },
+    {
+      "id": "F-03",
+      "kind": "directory",
+      "path": "node_modules/",
+      "basis": "dependency tree is a build input, not deliverable content"
+    },
+    {
+      "id": "F-04",
+      "kind": "directory",
+      "path": "dist/",
+      "basis": "build output"
+    },
+    {
+      "id": "F-05",
+      "kind": "directory",
+      "path": "out/",
+      "basis": "build output"
+    },
+    {
+      "id": "F-06",
+      "kind": "directory",
+      "path": "coverage/",
+      "basis": "generated coverage output"
+    },
+    {
+      "id": "F-07",
+      "kind": "directory",
+      "path": ".tmp-probe/",
+      "basis": "local probe evidence and release working roots"
+    },
+    {
+      "id": "F-08",
+      "kind": "file",
+      "path": ".codex/scanner-internal-dispositions.json",
+      "basis": "D-6 internal disposition carrier (conditional on C-1/C-2/C-3); listed explicitly in addition to the .codex/ strip entry so the carrier is a named forbidden object"
+    },
+    {
+      "id": "F-09",
+      "kind": "file",
+      "path": "publish/sync-base.json",
+      "basis": "sync registry never enters the release tree; listed explicitly in addition to the publish/ strip entry"
+    }
+  ],
+  "trackedInputRule": "a tracked path that matches forbiddenCandidatePaths is an input anomaly: reported as FORBIDDEN_TRACKED_INPUT and blocks preparation; never silently dropped",
+  "requiredTargets": {
+    "files": [
+      "README.md",
+      "LICENSE",
+      "THIRD-PARTY-NOTICES.md",
+      "CHANGELOG.md",
+      "SECURITY.md",
+      "CLAUDE.md",
+      "CONTEXT.md",
+      "docs/PRD.md",
+      "docs/ARCHITECTURE.md",
+      "docs/DESIGN.md",
+      "package.json",
+      "package-lock.json",
+      "electron-builder.yml",
+      "dev-app-update.yml",
+      "electron.vite.config.ts",
+      "eslint.config.mjs",
+      "tsconfig.json",
+      "tsconfig.node.json",
+      "tsconfig.web.json",
+      "tsconfig.extension.json",
+      ".editorconfig",
+      ".gitattributes",
+      ".gitignore",
+      ".prettierrc.yaml",
+      ".prettierignore",
+      ".github/workflows/ci.yml",
+      "icon.png",
+      "resources/icon.png",
+      "build/icon.png",
+      "build/icon.ico",
+      "build/icon.icns",
+      "build/icon-16.png",
+      "build/icon-32.png",
+      "build/icon-48.png",
+      "build/icon-128.png",
+      "extension/README.md",
+      "extension/manifest.json",
+      "resources/bin/README.md",
+      "resources/bin/aria2-LICENSE.txt",
+      "resources/bin/ffmpeg-LICENSE.txt",
+      "resources/bin/yt-dlp-LICENSE.txt",
+      "resources/bin/license-provenance.json",
+      "scripts/release-policy.json",
+      "scripts/release.mjs",
+      "scripts/run-node-tests.mjs",
+      "scripts/reporters/skip-summary.mjs",
+      "scripts/reporters/coverage-report.mjs",
+      "scripts/gate.mjs",
+      "scripts/build-extension.mjs",
+      "scripts/scan-secrets.mjs",
+      "scripts/scan-licenses.mjs",
+      "tests/setup/jsdom.ts",
+      "docs/assets/screenshots/main-window.png",
+      "docs/assets/screenshots/video-download.png",
+      "docs/assets/screenshots/extension-use.png",
+      "docs/assets/screenshots/extension-load-guide.png"
+    ],
+    "directories": [
+      {
+        "path": "src/main/",
+        "minEntries": 1,
+        "basis": "main-process source and tests"
+      },
+      {
+        "path": "src/renderer/",
+        "minEntries": 1,
+        "basis": "renderer source and tests"
+      },
+      {
+        "path": "src/preload/",
+        "minEntries": 1,
+        "basis": "preload source and tests"
+      },
+      {
+        "path": "src/shared/",
+        "minEntries": 1,
+        "basis": "shared contracts"
+      },
+      {
+        "path": "extension/src/",
+        "minEntries": 1,
+        "basis": "extension source and tests"
+      },
+      {
+        "path": "scripts/release/",
+        "minEntries": 1,
+        "basis": "release tooling modules and the .mjs release test suite"
+      },
+      {
+        "path": "tests/helpers/",
+        "minEntries": 1,
+        "basis": "shared test helpers"
+      },
+      {
+        "path": "resources/bin/license-notices/aria2/",
+        "minEntries": 1,
+        "basis": "engine licence materials"
+      },
+      {
+        "path": "resources/bin/license-notices/ffmpeg/",
+        "minEntries": 1,
+        "basis": "engine licence materials"
+      },
+      {
+        "path": "resources/bin/license-notices/yt-dlp/",
+        "minEntries": 1,
+        "basis": "engine licence materials"
+      },
+      {
+        "path": "docs/assets/screenshots/",
+        "minEntries": 3,
+        "basis": "delivered real screenshots"
+      }
+    ],
+    "provenance": {
+      "registry": "resources/bin/license-provenance.json",
+      "materialsField": "materials",
+      "pathField": "path",
+      "sha256Field": "sha256",
+      "mustMatchSha256": true,
+      "basis": "every registered licence material must be present in the candidate with the registered byte hash; the registry is read from the frozen commit, never from a second list"
+    }
+  },
+  "publicDocuments": {
+    "registry": "publish/sync-base.json",
+    "registrySchemaVersion": 1,
+    "exactCount": 5,
+    "documents": [
+      {
+        "sourcePath": "CLAUDE.md",
+        "publicPath": "publish/CLAUDE.md",
+        "targetPath": "CLAUDE.md"
+      },
+      {
+        "sourcePath": "docs/PRD.md",
+        "publicPath": "publish/docs/PRD.md",
+        "targetPath": "docs/PRD.md"
+      },
+      {
+        "sourcePath": "docs/ARCHITECTURE.md",
+        "publicPath": "publish/docs/ARCHITECTURE.md",
+        "targetPath": "docs/ARCHITECTURE.md"
+      },
+      {
+        "sourcePath": "docs/DESIGN.md",
+        "publicPath": "publish/docs/DESIGN.md",
+        "targetPath": "docs/DESIGN.md"
+      },
+      {
+        "sourcePath": "CONTEXT.md",
+        "publicPath": "publish/CONTEXT.md",
+        "targetPath": "CONTEXT.md"
+      }
+    ],
+    "forbiddenTargets": ["AGENTS.md"],
+    "baseCommitForm": "full 40-hex commit object id; symbolic names (HEAD, main, tags) and abbreviated ids are rejected",
+    "driftRule": "per document: blob of sourcePath at the frozen commit must equal blob of sourcePath at baseCommit, the working-tree source must equal the frozen blob, and sha256 of the publicPath blob must equal publicSha256; unrelated commits never count as drift; the tool never rewrites the registry or public files"
+  },
+  "internalMarkers": {
+    "scope": "text content of the actual candidate, split into two faces by file extension: prose (Markdown and any other text) must be marker-free; code (source, tests, rules, configuration) may carry a marker only at a position declared below for that exact file. Ordinary words such as Task, plan, spec, review are never markers. Matching is boundary-aware: a marker never matches inside a longer identifier or path segment (the npm package name electron-publish does not contain the overlay directory marker).",
+    "markers": [
+      {
+        "id": "M-01",
+        "kind": "path-prefix",
+        "value": "docs/v0.1/",
+        "reason": "stripped internal version docs"
+      },
+      {
+        "id": "M-02",
+        "kind": "path-prefix",
+        "value": "docs/v0.2/",
+        "reason": "stripped internal version docs"
+      },
+      {
+        "id": "M-03",
+        "kind": "path-prefix",
+        "value": "docs/v0.3/",
+        "reason": "stripped internal version docs"
+      },
+      {
+        "id": "M-04",
+        "kind": "path-prefix",
+        "value": "docs/v0.4/",
+        "reason": "stripped internal version docs"
+      },
+      {
+        "id": "M-05",
+        "kind": "path-prefix",
+        "value": "docs/v1.0/",
+        "reason": "stripped internal version docs"
+      },
+      {
+        "id": "M-06",
+        "kind": "path",
+        "value": "docs/TODO.md",
+        "reason": "stripped backlog"
+      },
+      {
+        "id": "M-07",
+        "kind": "path",
+        "value": "docs/progress.md",
+        "reason": "stripped progress log"
+      },
+      {
+        "id": "M-08",
+        "kind": "path",
+        "value": "docs/CURRENT_MILESTONE.md",
+        "reason": "stripped milestone file"
+      },
+      {
+        "id": "M-09",
+        "kind": "path",
+        "value": "docs/grill-templates.md",
+        "reason": "stripped clarification templates"
+      },
+      {
+        "id": "M-10",
+        "kind": "path",
+        "value": "prototype-downlord.html",
+        "reason": "stripped prototype"
+      },
+      {
+        "id": "M-11",
+        "kind": "path-prefix",
+        "value": "publish/",
+        "reason": "overlay source directory"
+      },
+      {
+        "id": "M-12",
+        "kind": "path-prefix",
+        "value": ".codex/",
+        "reason": "internal tool configuration (not public)"
+      },
+      {
+        "id": "M-13",
+        "kind": "path-prefix",
+        "value": "docs/codex/",
+        "reason": "internal tool routing docs (not public)"
+      },
+      {
+        "id": "M-14",
+        "kind": "path-prefix",
+        "value": ".tmp-probe/",
+        "reason": "local probe evidence root"
+      },
+      {
+        "id": "M-15",
+        "kind": "path-segment",
+        "value": "superpowers/",
+        "reason": "internal spec/plan/review workflow directory"
+      },
+      {
+        "id": "M-16",
+        "kind": "path-segment",
+        "value": ".claude/projects/",
+        "reason": "shared memory injection path"
+      },
+      {
+        "id": "M-17",
+        "kind": "token",
+        "value": "/grill-with-docs",
+        "reason": "internal clarification mode entry"
+      }
+    ],
+    "allowedLiteralPositions": [
+      {
+        "file": "scripts/release-policy.json",
+        "positions": ["json-pointer"],
+        "markers": ["*"],
+        "jsonPointerPrefixes": [
+          "/stripPaths",
+          "/forbiddenCandidatePaths",
+          "/internalMarkers/markers",
+          "/internalMarkers/allowedLiteralPositions",
+          "/publicDocuments",
+          "/artifactRules/forbiddenInPackage",
+          "/linkRules/localTargets/forbidTargetsMatching",
+          "/controlledRoot"
+        ],
+        "note": "rule data only; any other field of this file is ordinary content"
+      },
+      {
+        "file": "scripts/release/release.test.mjs",
+        "positions": ["named-case-data"],
+        "markers": ["*"],
+        "note": "synthetic payloads are recognised only inside named test cases; the file is not exempt as a whole"
+      },
+      {
+        "file": "scripts/scan-secrets.mjs",
+        "positions": ["registry-file-field", "code-comment"],
+        "markers": ["M-01", "M-04", "M-05", "M-12", "M-15"],
+        "note": "ADJUDICATED entries name internal files by exact path; the rationale comments explain the narrowing decisions. Sensitive rules still apply to this file."
+      },
+      {
+        "file": "scripts/scanSecrets.test.ts",
+        "positions": ["named-case-data"],
+        "markers": ["M-05", "M-12", "M-15"],
+        "note": "fixture paths modelled after the internal tree"
+      },
+      {
+        "file": ".gitignore",
+        "positions": ["ignore-rule"],
+        "markers": ["M-14"],
+        "note": "the ignore pattern for the probe root is the rule itself"
+      },
+      {
+        "file": "scripts/licenseMaterials.test.ts",
+        "positions": ["string-literal"],
+        "markers": ["M-14"],
+        "note": "fixture root under the ignored probe directory"
+      },
+      {
+        "file": "scripts/scanLicenses.test.ts",
+        "positions": ["string-literal"],
+        "markers": ["M-14"],
+        "note": "fixture root under the ignored probe directory"
+      },
+      {
+        "file": "src/main/ipc/registration.test.ts",
+        "positions": ["string-literal"],
+        "markers": ["M-14"],
+        "note": "fixture root under the ignored probe directory"
+      },
+      {
+        "file": "src/renderer/src/components/SettingsPage.tsx",
+        "positions": ["code-comment"],
+        "markers": ["M-05", "M-10"],
+        "note": "source-of-truth comments naming the internal README and the prototype"
+      },
+      {
+        "file": "CONTEXT.md",
+        "positions": ["prose-term"],
+        "markers": ["M-11"],
+        "section": "开源发布",
+        "maxOccurrences": 3,
+        "note": "the public glossary explains the overlay directory of the release mechanism itself; bounded to the release section of the reviewed public overlay"
+      },
+      {
+        "file": "extension/artifact.test.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/adapter/browserAdapter.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/adapter/chromeAdapter.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/buildId.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/channel/protocol.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/contract.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/downloads/takeoverClient.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/popup/main.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/popup/popupModel.test.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/popup/popupModel.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/sw/lifecycle.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "extension/src/sw/swMessage.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "scripts/audit-todo-assignments.mjs",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "scripts/buildId.mjs",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "scripts/buildId.test.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "src/renderer/src/components/TakeoverDialog.test.tsx",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "src/renderer/src/components/TakeoverDialog.tsx",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "src/shared/sniffMedia.ts",
+        "positions": ["code-comment"],
+        "markers": ["M-06"],
+        "note": "backlog provenance comment naming the stripped backlog file by path"
+      },
+      {
+        "file": "src/renderer/src/components/ProxySettings.tsx",
+        "positions": ["code-comment"],
+        "markers": ["M-10"],
+        "note": "design provenance comment naming the stripped prototype by path"
+      },
+      {
+        "file": "src/renderer/src/components/TitleBar.tsx",
+        "positions": ["code-comment"],
+        "markers": ["M-10"],
+        "note": "design provenance comment naming the stripped prototype by path"
+      }
+    ],
+    "exemptionRule": "an occurrence is rule data only when it sits at a declared position kind of a declared file; no directory, file or rule-wide exemption; declared positions with zero occurrences are reported as unused; secrets rules are never exempted by these positions",
+    "faces": {
+      "prose": "*.md and every text file whose extension is not listed as code; zero occurrences except a declared prose-term position",
+      "code": "ts tsx js mjs cjs css json yml yaml toml ffpreset and dot-files (.gitignore .gitattributes .editorconfig .prettierignore .prettierrc); occurrences must sit at a declared position",
+      "binary": "binary paths and NUL-containing content are listed as skipped, never counted as clean"
+    },
+    "positionKinds": {
+      "json-pointer": "string values (and keys) under one of jsonPointerPrefixes of a JSON file",
+      "named-case-data": "string literals or comments inside a test file that models synthetic paths",
+      "registry-file-field": "the file: string field of an entry inside the ADJUDICATED registry array of the secrets scanner",
+      "code-comment": "line or block comment text",
+      "string-literal": "a string literal (fixture root or path constant)",
+      "ignore-rule": "a whole-line ignore pattern in an ignore file",
+      "prose-term": "a glossary definition of the release mechanism itself, limited to maxOccurrences inside the named section"
+    }
+  },
+  "linkRules": {
+    "documentGlobs": ["**/*.md"],
+    "staticReferenceGlobs": ["**/*.html", "**/*.svg"],
+    "syntaxCoverage": [
+      "markdown-inline",
+      "markdown-reference",
+      "markdown-image",
+      "markdown-autolink",
+      "html-anchor",
+      "html-img",
+      "html-script-src",
+      "html-link-href",
+      "svg-href"
+    ],
+    "localTargets": {
+      "resolveAgainst": "candidate root; a leading '/' is root-relative",
+      "caseSensitive": true,
+      "forbidTargetsMatching": ["stripPaths", "forbiddenCandidatePaths"],
+      "forbidAbsoluteForms": ["windows-drive", "unc", "file-uri"],
+      "anchors": "github-slug; duplicate headings get numeric suffixes; explicit html ids count",
+      "verbatimUpstreamMaterials": {
+        "source": "requiredTargets.provenance registry entries whose transformation is \"verbatim byte copy\"",
+        "treatment": "links inside those files are parsed, resolved and listed in evidence with class upstream-verbatim; missing or case-mismatched local targets inside them are not counted as candidate defects because the bytes must stay identical to the upstream release; stripped targets and machine-absolute forms still fail",
+        "reason": "licence obligation to ship the upstream material unmodified"
+      }
+    },
+    "externalLinks": {
+      "verification": "per-url-required",
+      "deferredPushLinks": [],
+      "deferredPushLinkRule": "exact URL under https://github.com/lie-dream/DownLord/ that only becomes valid after this source push; no host-wide allowance; unreleased Release assets and disabled features are not eligible",
+      "stageResults": {
+        "pre-push": ["PASS", "DEFERRED_PUSH_LINK"],
+        "pre-release": ["PASS"]
+      },
+      "verbatimUpstreamMaterials": "external URLs inside verbatim upstream materials are listed with class upstream-verbatim and are not part of the per-url requirement; every other external URL of the candidate needs a per-url result",
+      "evidence": "evidence/external-links.json written by the operator: { schemaVersion: 1, candidateDigest, results: [{ url, status, checkedAt, checkedBy, httpStatus?, finalUrl?, dependsOnPush? }] }"
+    },
+    "unparsedReferenceTypes": ["css-url", "html-media-src", "markdown-html-block-other"],
+    "staticEntryFiles": [
+      {
+        "path": "src/renderer/index.html",
+        "rootRelativeTo": "src/renderer/",
+        "basis": "electron-vite renderer root (electron.vite.config.ts renderer.build.rollupOptions.input.index); a root-relative script src resolves inside src/renderer/"
+      },
+      {
+        "path": "src/renderer/takeover.html",
+        "rootRelativeTo": "src/renderer/",
+        "basis": "second renderer entry (rollupOptions.input.takeover) under the same renderer root"
+      },
+      {
+        "path": "extension/src/popup/popup.html",
+        "buildOutputs": ["popup.js"],
+        "basis": "esbuild output of scripts/build-extension.mjs ENTRY_POINTS written next to the copied popup.html in the extension output directory; not a source file"
+      }
+    ],
+    "staticEntryFilesRule": "only the listed files get a resolution root or a build-output list; any other html/svg file resolves every reference against the candidate root and a missing target is a defect",
+    "unparsedReferenceRule": "an occurrence of an unparsed reference type in a covered non-upstream document makes all-syntaxes-parsed UNCHECKED (exit 2) with the locations listed; occurrences inside verbatim upstream materials are listed in evidence only"
+  },
+  "artifactRules": {
+    "packageCommand": "npm run package, run explicitly by the operator inside the frozen build/ copy; never invoked by the release CLI",
+    "installerNameTemplate": "${name}-${version}-setup.${ext}",
+    "expectedArtifacts": ["nsis-installer", "installer-blockmap", "latest.yml", "extension-zip"],
+    "extensionZip": "dist/downlord-extension-${version}.zip",
+    "packagedNotices": "THIRD-PARTY-NOTICES.md",
+    "packagedLicenseDirectory": "bin/",
+    "forbiddenInPackage": [
+      "publish/",
+      "docs/TODO.md",
+      "docs/progress.md",
+      "docs/CURRENT_MILESTONE.md",
+      "docs/grill-templates.md",
+      ".tmp-probe/",
+      ".codex/",
+      "docs/codex/"
+    ],
+    "versionSources": [
+      "package.json#/version",
+      "package-lock.json#/version",
+      "package-lock.json#/packages/~1/version"
+    ]
+  },
+  "publicGit": {
+    "repositoryRole": "independent sibling repository with its own .git; not a worktree, clone or alternates user of the internal repository",
+    "branch": "refs/heads/main",
+    "remote": "lie-dream/DownLord",
+    "historyRule": "first public commit has no parent; every later public commit has exactly one parent, the previous public commit; no commit of the public chain may exist in the internal repository; existing tags never move",
+    "maintainer": {
+      "name": "lie-dream",
+      "email": "112708414+lie-dream@users.noreply.github.com"
+    },
+    "baselineEvidence": "evidence/public-baseline.json",
+    "resultEvidence": "evidence/public-git.<run-id>.json",
+    "resultEvidenceRule": "one append-only file per check run; never overwritten"
+  },
+  "controlledRoot": ".tmp-probe/releases/",
+  "checks": [
+    {
+      "id": "source",
+      "title": "Frozen source, safe tree and candidate manifest",
+      "targetKind": "internal-source",
+      "owner": "6a",
+      "prepare": true,
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "on-main",
+        "clean-worktree",
+        "frozen-commit",
+        "policy-frozen",
+        "registry-frozen",
+        "tree-entries-supported",
+        "path-safety",
+        "forbidden-tracked-input",
+        "required-targets",
+        "candidate-matches-expected",
+        "source-reverified"
+      ],
+      "evidence": ["source.json", "candidate-manifest.json"]
+    },
+    {
+      "id": "sync",
+      "title": "Public document sync baseline",
+      "targetKind": "internal-source",
+      "owner": "6a",
+      "prepare": true,
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "registry-shape",
+        "base-commit-resolvable",
+        "source-blob-unchanged-vs-base",
+        "working-tree-source-unchanged",
+        "public-hash-matches"
+      ],
+      "evidence": ["source.json"]
+    },
+    {
+      "id": "candidate-boundary",
+      "title": "Strip residue, required targets and forbidden paths on the actual candidate",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "no-strip-residue",
+        "required-targets-present",
+        "no-forbidden-paths",
+        "no-git-directory"
+      ],
+      "evidence": ["evidence/candidate-boundary.<run-id>.json"]
+    },
+    {
+      "id": "internal-markers",
+      "title": "Internal path/marker occurrences in candidate text",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["prose-clean", "literal-positions-only"],
+      "evidence": ["evidence/internal-markers.<run-id>.json"]
+    },
+    {
+      "id": "candidate-secrets",
+      "title": "Secrets scan on the live candidate with the original developer identity",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["identity-context-present", "open-empty", "stale-empty", "coverage-listed"],
+      "evidence": ["evidence/secrets.<run-id>.json"]
+    },
+    {
+      "id": "local-links",
+      "title": "Local files, images and anchors",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "all-syntaxes-parsed",
+        "targets-exist",
+        "case-matches",
+        "no-stripped-targets",
+        "no-machine-absolute"
+      ],
+      "evidence": ["evidence/local-links.<run-id>.json"]
+    },
+    {
+      "id": "external-links",
+      "title": "External links",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["per-url-result", "deferred-entries-exact"],
+      "evidence": ["evidence/external-links.json", "evidence/external-links-result.<run-id>.json"]
+    },
+    {
+      "id": "public-history",
+      "title": "Independent public history and tag baseline",
+      "targetKind": "public-repository",
+      "owner": "6a",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "repository-independent",
+        "no-alternates",
+        "branch-is-main",
+        "public-commit-present",
+        "baseline-present",
+        "parent-matches-baseline",
+        "linear-single-parent-chain",
+        "no-internal-commit-intersection",
+        "tags-unmoved",
+        "content-matches-candidate"
+      ],
+      "evidence": ["evidence/public-baseline.json", "evidence/public-git.<run-id>.json"]
+    },
+    {
+      "id": "public-metadata",
+      "title": "Author / committer / tagger and message privacy",
+      "targetKind": "public-repository",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["author", "committer", "tagger", "message-content"],
+      "evidence": ["evidence/public-metadata.<run-id>.json"]
+    },
+    {
+      "id": "metadata-contract",
+      "title": "Version, author, npm and update targets",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["package-version", "lock-version", "author", "engines-npm", "update-targets"],
+      "evidence": ["evidence/metadata-contract.<run-id>.json"]
+    },
+    {
+      "id": "internal-gate",
+      "title": "Internal gate bound to the frozen commit",
+      "targetKind": "evidence",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["gate", "scan-secrets", "scan-licenses", "audit-todo", "test-release"],
+      "evidence": ["evidence/internal-gate.json", "evidence/release-tests.json"]
+    },
+    {
+      "id": "validation-delta",
+      "title": "Internal tree vs public tree validation delta",
+      "targetKind": "evidence",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["delta-items-listed", "no-unresolved-push-blocker"],
+      "evidence": ["evidence/validation-delta.json"]
+    },
+    {
+      "id": "license-materials",
+      "title": "Engine licence materials and provenance",
+      "targetKind": "candidate",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": ["materials-present", "hashes-match-provenance", "notices-consistent"],
+      "evidence": ["evidence/license-materials.<run-id>.json"]
+    },
+    {
+      "id": "manual-checks",
+      "title": "Human semantic and screenshot privacy reviews bound to content hashes",
+      "targetKind": "evidence",
+      "owner": "6b",
+      "stages": {
+        "pre-push": "required",
+        "pre-release": "required"
+      },
+      "subchecks": [
+        "public-documents-reviewed",
+        "readme-community-reviewed",
+        "screenshots-reviewed"
+      ],
+      "evidence": ["evidence/manual-checks.json"]
+    },
+    {
+      "id": "public-ci",
+      "title": "CI evidence for the public commit",
+      "targetKind": "evidence",
+      "owner": "Task6",
+      "stages": {
+        "pre-push": "not-applicable",
+        "pre-release": "required"
+      },
+      "subchecks": ["ci-run-bound-to-commit"],
+      "evidence": ["evidence/public-ci.json"]
+    },
+    {
+      "id": "artifact-origin",
+      "title": "Installer and extension ZIP from the same frozen candidate",
+      "targetKind": "artifact",
+      "owner": "7",
+      "stages": {
+        "pre-push": "not-applicable",
+        "pre-release": "required"
+      },
+      "subchecks": ["build-inputs-recorded", "artifact-hashes-recorded"],
+      "evidence": ["evidence/build-inputs.json", "evidence/artifacts.json"]
+    },
+    {
+      "id": "package-materials",
+      "title": "Package layout, licences, notices and in-package hygiene",
+      "targetKind": "artifact",
+      "owner": "7",
+      "stages": {
+        "pre-push": "not-applicable",
+        "pre-release": "required"
+      },
+      "subchecks": ["layout", "licences-in-bin", "notices-copied", "no-forbidden-in-package"],
+      "evidence": ["evidence/package-inspection.json"]
+    },
+    {
+      "id": "security-channel",
+      "title": "Private vulnerability reporting enabled",
+      "targetKind": "evidence",
+      "owner": "Task6",
+      "stages": {
+        "pre-push": "not-applicable",
+        "pre-release": "required"
+      },
+      "subchecks": ["channel-enabled"],
+      "evidence": ["evidence/security-channel.json"],
+      "note": "the SECURITY.md entry URL is still checked by external-links at pre-push"
+    },
+    {
+      "id": "task6-acceptance",
+      "title": "Task 6 version-level acceptance records",
+      "targetKind": "evidence",
+      "owner": "Task6",
+      "stages": {
+        "pre-push": "not-applicable",
+        "pre-release": "required"
+      },
+      "subchecks": ["acceptance-records-bound"],
+      "evidence": ["evidence/task6-acceptance.json"]
+    }
+  ],
+  "admissionLabels": {
+    "prepare": "candidate-prepared",
+    "pre-push": "push-admissible",
+    "pre-release": "release-admissible"
+  },
+  "exitCodes": {
+    "0": "selected operation/stage admitted",
+    "1": "rule violation or mismatch",
+    "2": "missing input, unchecked or pending",
+    "3": "execution error"
+  },
+  "evidenceContracts": {
+    "internal-gate.json": "{ schemaVersion: 1, commit, runs: { gate | scan-secrets | scan-licenses | audit-todo : { command, exitCode, status, startedAt, finishedAt, log? } } } written by the operator from separately executed commands on the internal tree at the frozen commit",
+    "release-tests.json": "{ schemaVersion: 1, commit, command, exitCode, counts: { tests, pass, fail, skipped }, finishedAt } from an independent npm run test:release",
+    "validation-delta.json": "{ schemaVersion: 1, commit, candidateDigest, items: [{ id, object, input, canRun, coverage, conclusion, timepoint, evidence, pushBlocker, resolved }] } with every required id listed in checks.mjs REQUIRED_DELTA_ITEMS",
+    "manual-checks.json": "{ schemaVersion: 1, reviews: [{ id: public-documents | readme-community | screenshots, reviewer, reviewedAt, candidateDigest, result, files: [{ path, sha256, privacy?, metadataReviewed?, source? }] }] }; reviewer must be a person, never an automated agent",
+    "external-links.json": "see linkRules.externalLinks.evidence",
+    "public-baseline.json": "see publicGit.baselineEvidence"
+  }
+}

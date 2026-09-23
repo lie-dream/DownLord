@@ -1,0 +1,146 @@
+/**
+ * 批量下载对话框样式(spec §7.2)。
+ *
+ * - 公共骨架(.overlay / .dialog / .dialog-head / .dialog-body / .dialog-foot / .dialog-close / .btn / .select)
+ *   复用全局样式(AddTaskDialog.css + buttons.css);仅音频开关区(.audio-opt / .ao-* / .switch)复用
+ *   FormatDialog.css(两对话框均在 App 内常驻挂载,样式全局可用),避免两份骨架 / 开关漂移。
+ * - 本文件只补「批量勾选列表 + 全选条 + 策略行」专属类;全部色值取自 tokens.css 变量,不另造色值(DESIGN §1)。
+ */
+
+/* 播放列表说明(v1.0 Task 3 · M-026):交代「为什么是整个列表」+ 只下一集的出路。
+   只读事实陈述,不是警示 —— 故用与 .batch-count 同一档的次文字色,不用警示色。
+   色值 / 字号全走既有 token,零新造(DESIGN §1)。 */
+.batch-note {
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* 全选 / 反选 + 计数条 */
+.batch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.batch-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.link-btn {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-control);
+  color: var(--brand);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.link-btn:hover {
+  background: var(--brand-subtle);
+}
+
+.batch-count {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 条目勾选列表 */
+.batch-list {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  overflow: hidden auto;
+  max-height: 320px;
+}
+
+.batch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.batch-row + .batch-row {
+  border-top: 1px solid var(--divider);
+}
+
+.batch-row:hover {
+  background: var(--bg-hover);
+}
+
+.batch-row.sel {
+  background: var(--brand-subtle);
+}
+
+/* 方形勾选框(对应 FormatDialog 圆形 .radio,此处批量用方形 + 对勾) */
+.batch-row .check {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--text-tertiary);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  transition: 0.12s;
+}
+
+.batch-row.sel .check {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+
+.batch-row .check svg {
+  width: 12px;
+  height: 12px;
+}
+
+.batch-row .b-idx {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.batch-row .b-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.batch-row .b-dur {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 统一策略区 */
+.batch-policy {
+  margin-top: 14px;
+}
+
+.bp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bp-label {
+  font-size: 13.5px;
+  font-weight: 600;
+}

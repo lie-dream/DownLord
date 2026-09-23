@@ -1,0 +1,21 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": [
+    "electron.vite.config.*",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/shared/**/*",
+    "scripts/**/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "module": "ESNext",
+    // allowJs(v0.4 Task 2):让 scripts/ 下的 .mjs 构建脚本进入 program,其 JSDoc 类型真正生效。
+    // 不开则基线的 noImplicitAny: false 会把 `import … from './extensionVersion.mjs'` 静默当 any ——
+    // 既不报 TS2307、也不校验签名,A8 的版本校验断言在类型层等于毫无保护(已实测)。
+    // checkJs 保持默认 false:只取 .mjs 的类型,不把 JS 脚本内部纳入报错范围。
+    "allowJs": true,
+    "types": ["electron-vite/node", "node"]
+  }
+}

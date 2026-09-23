@@ -1,0 +1,98 @@
+/**
+ * 重复检测决策对话框样式 — 仅布局类(.dup-*),全部色值取自 tokens.css 变量,零新造色值(DESIGN §6)。
+ *
+ * - 公共骨架(.overlay / .dialog / .dialog-head / .dialog-body / .dialog-foot / .dialog-close / .btn /
+ *   .select / .pill)复用全局样式(AddTaskDialog.css + controls.css + buttons.css),此处只补冲突列表布局。
+ * - 清晰度胶囊复用 .pill 基类(仅 font/padding/radius),在 .dup-item 作用域补中性底 / 次文字色(取 token,
+ *   与 TaskRow 清晰度胶囊同源观感),不新增 class、不造色值。
+ */
+
+.dup-lead {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* 应用到全部(仅批量) */
+.dup-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dup-all label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* 冲突项列表 */
+.dup-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.dup-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+}
+
+.dup-item + .dup-item {
+  border-top: 1px solid var(--divider);
+}
+
+.dup-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dup-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dup-fn {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 清晰度胶囊:复用 .pill 基类,补中性底 / 次文字(token,与 TaskRow 同源;.pill 基类无 bg/color) */
+.dup-name .pill {
+  flex-shrink: 0;
+  background: var(--bg-selected);
+  color: var(--text-secondary);
+}
+
+.dup-existing {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* 覆盖 / 重命名 诚实副文案(可逆说明) */
+.dup-note {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+
+.dup-error {
+  color: var(--danger);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,212 @@
+/**
+ * 历史页样式 — 仅 layout(搜索 / 筛选行、统计卡网格、类别占比条、列表 / 空态容器);
+ * 色彩全部走 theme/tokens.css 变量(绝不另造色值,DESIGN §2/§6)。
+ *
+ * 复用既有组件与全局类:搜索框 .input(AddTaskDialog.css)/ 类别 chips .filter-bar(CategoryChips)/
+ * 状态·时间 .select(controls.css)/ 历史列表 .task(TaskRow)/ 空态 .empty(EmptyState)/
+ * 占比条类别图标 .t-icon 配色(TaskRow.css)。统计卡壳复刻 .set-card(token 一致、自包含,不跨文件依赖)。
+ */
+
+.history-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============ 搜索栏(复用 .input;放大镜描边图标绝对定位)============ */
+.hist-search-row {
+  position: relative;
+  padding: 14px 20px 10px;
+}
+
+.hist-search-ico {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.hist-search-ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hist-search-input {
+  width: 100%;
+  padding-left: 34px;
+}
+
+/* ============ 筛选行:CategoryChips(.filter-bar)占主 + 状态 / 时间 .select 靠右 ============ */
+.hist-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 20px;
+  border-bottom: 1px solid var(--divider);
+  flex-wrap: wrap;
+}
+
+/* 复用 CategoryChips 的 .filter-bar,仅去其自带底线(整行统一一条),不改任何色值 */
+.hist-filter-row .filter-bar {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+}
+
+.hist-selects {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 6px 0;
+}
+
+.hist-date {
+  width: 140px;
+}
+
+.hist-date-sep {
+  color: var(--text-tertiary);
+}
+
+/* 自定义区间提示(B5:非法日期 / 起 > 止):作为筛选行内换行项(分隔线之上、日期输入下方),
+   flex-basis:100% 独占一行,左对齐内容区(同搜索栏 20px),不再顶边 / 不被分隔线隔断 */
+.hist-date-hint {
+  flex-basis: 100%;
+  margin-top: -2px;
+  padding: 0 20px 8px;
+  font-size: 12px;
+  color: var(--warning);
+}
+
+/* ============ 滚动区:统计卡 + 列表 / 空态共用一个纵向滚动容器 ============ */
+.hist-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- 统计区 ---- */
+.hist-stats {
+  flex-shrink: 0;
+  padding: 16px 20px 4px;
+}
+
+/* 数字卡网格:4 张等宽(卡片壳复刻 .set-card:--bg-layer / --stroke,token 一致) */
+.hist-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  padding: 14px 16px;
+  background: var(--bg-layer);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+}
+
+.sc-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.sc-count {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-unit {
+  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.sc-bytes {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 按类别占比条(纯 CSS,零图表库;背景 --brand-subtle / 填充 --brand) */
+.hist-cat-bars {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hcb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 复用 TaskRow 的 .t-icon 类别配色,缩小尺寸融入占比行(不覆盖任何色值,仅改尺寸) */
+.hcb-ico.t-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.hcb-ico.t-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.hcb-name {
+  flex-shrink: 0;
+  width: 56px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.hcb-bar {
+  flex: 1;
+  min-width: 0;
+  height: 8px;
+  background: var(--brand-subtle);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.hcb-bar > span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--brand);
+  border-radius: var(--radius-pill);
+}
+
+.hcb-num {
+  flex-shrink: 0;
+  min-width: 116px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 列表 / 上限提示 ---- */
+.hist-task-list {
+  padding: 8px 20px 14px;
+}
+
+.hist-limit-note {
+  padding: 2px 20px 18px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}

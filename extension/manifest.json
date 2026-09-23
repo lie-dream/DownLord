@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "DownLord Connector",
+  "description": "把浏览器里的下载交给 DownLord。需配合 DownLord 桌面端使用。",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw1OJA0U7qmKKgy4rRq30NJTsr/xioX7bia96oQEYq2dX+DvoVNY5n5OxWzBLgs/wyGRcuRtQZ+/avbcUOnamt325VZAEAalGoIQw72xv6kcDvhGIOLO/RGwTPGlehzY4DOZ1TD3p15NTH10YBHZoTXbHvmXTZW7gP8cH4D+G+8S1ihmPQYij+gBLELpj/A9oq+oR3lAtePOrETUXJ0ifB/tA8Nkce5bSJfeRvsBDa30UswMfqE9o0mjf9Vpa/UPX+CocQQOnNuMkn3RsexRVUwPOiM3jCxjxL2acjiacmQmjO8hQpENbT6E8rB4qOjewMaF0OFrNlmOToscAvlfjywIDAQAB",
+  "permissions": ["storage", "downloads", "webRequest", "cookies"],
+  "host_permissions": ["http://127.0.0.1/*", "<all_urls>"],
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

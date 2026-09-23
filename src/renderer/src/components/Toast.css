@@ -1,0 +1,48 @@
+/**
+ * Toast 样式 — 右下角浮层,使用 tokens.css 变量(不另造色值)。
+ * 位于状态栏(32px)之上;error 左色条 danger、info 左色条 brand。
+ */
+
+.toast-viewport {
+  position: fixed;
+  right: 18px;
+  bottom: 44px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 220px;
+  max-width: 360px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-layer);
+  border: 1px solid var(--stroke-strong);
+  border-left: 3px solid var(--text-tertiary);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-flyout);
+  animation: toast-in 0.16s ease-out;
+}
+
+.toast.error {
+  border-left-color: var(--danger);
+}
+
+.toast.info {
+  border-left-color: var(--brand);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

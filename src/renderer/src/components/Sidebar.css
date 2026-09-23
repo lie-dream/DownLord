@@ -1,0 +1,139 @@
+/**
+ * 左导航样式 — 复刻原型 .sidebar 及其子元素,使用 tokens.css 变量。
+ *
+ * - active 项左侧 3px 主色指示条(::before)+ bg-selected 背景。
+ * - soon 项灰显、hover 无背景、cursor:default。
+ * - 计数 / soon 标签经 .text(flex:1)推到右侧。
+ */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--stroke);
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 4px 14px;
+  padding: 11px 14px;
+  background: var(--brand);
+  color: var(--text-on-brand);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background 0.12s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-add:hover {
+  background: var(--brand-hover);
+}
+
+.btn-add:active {
+  background: var(--brand-pressed);
+}
+
+.btn-add svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+  padding: 6px 12px 4px;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1px 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nav-item .text {
+  flex: 1;
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+}
+
+.nav-item.active {
+  background: var(--bg-selected);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  background: var(--brand);
+  border-radius: 2px;
+}
+
+.nav-count {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-hover);
+  color: var(--text-tertiary);
+}
+
+.nav-item.active .nav-count {
+  color: var(--brand);
+}
+
+.nav-item.soon {
+  color: var(--text-tertiary);
+  cursor: default;
+}
+
+.nav-item.soon:hover {
+  background: transparent;
+}
+
+.soon-tag {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-hover);
+  color: var(--text-tertiary);
+}
+
+.nav-bottom {
+  margin-top: auto;
+}

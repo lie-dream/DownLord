@@ -1,0 +1,213 @@
+/**
+ * 「浏览器扩展」分组样式(v0.4 Task 3 · spec §4.1;v0.4 Task 4 Step 6a 追加「下载接管」子区)。
+ *
+ * - `.set-group` / `.sg-title` / `.set-card` / `.set-row` / `.sr-*` / `.up-note` 全部复用 SettingsPage.css(全局),
+ *   `.btn` / `.input` / `.switch` 复用 buttons.css / AddTaskDialog.css / controls.css,
+ *   接管子区的标签编辑器复用 SettingsPage.css 的 `.ext-tags` / `.ext-chip` / `.ext-x` / `.ext-add`
+ *   —— 本文件**不重定义**任何既有类。
+ * - 全部色值取自 theme/tokens.css 变量,**零新造色值**(DESIGN §6);深浅两套主题下都可读。
+ * - 类一律以 `.ec-` 前缀并收在 `.extension-channel` 语义内,避免与其它分组撞名。
+ */
+
+/* 副文案(状态副行 / 关闭态补充说明 / 轻提示):比 .sr-desc 稍强调一档 */
+.extension-channel .ec-sub {
+  margin-top: 4px;
+  color: var(--text-secondary);
+}
+
+/* 行内控件组(端口输入 + 按钮 / 配对码三按钮) */
+.extension-channel .ec-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.extension-channel .ec-port-input {
+  width: 88px;
+  text-align: right;
+}
+
+/* 端口被主进程拒绝:可见无效态(诚实、不静默)—— 仅红描边,不另造色值 */
+.extension-channel .ec-port-input.invalid {
+  border-color: var(--danger);
+}
+
+/* ★ 跨整行的提示条:与 .set-row **平级**、排在它下方,占满整张卡片的宽度。
+ *
+ * 为什么不放进 .sr-text(2026-07-31 手测 A10 / A6):
+ * ① `.set-row` 是 `align-items: center`,右列的输入框 / 按钮**垂直居中** ——
+ *    提示一挂进左列,左列变高,输入框被推到行中间,提示看着比输入框高一截(「位置偏上」);
+ * ② 左列还要与右列分宽度,长文案换行后会与「我知道了」挤作一团。
+ * 提示是关于**整行**的,就让它占满整行;用与 `.set-row + .set-row` 同款的分隔线接上去。 */
+.extension-channel .ec-rowmsg {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--divider);
+}
+
+/* 跨整行版的错误行:padding 已由 .ec-rowmsg 给,不要再叠 margin-top */
+.extension-channel .ec-rowmsg.ec-err {
+  margin-top: 0;
+}
+
+/* 跨整行版的提示条:去掉圆角块状的自带边距,底色铺满整行。
+ * ⚠️ **必须显式重写 padding**:`.ec-notice`(0,2,0)与 `.ec-rowmsg`(0,2,0)同优先级,
+ * 而它在本文件里定义得更靠后 → 会把 `.ec-rowmsg` 的 `10px 16px` 盖回 `8px 10px`,
+ * 提示条的左右内边距就与 `.set-row` 的 16px 对不齐。这条选择器是 (0,3,0),才压得住。 */
+.extension-channel .ec-rowmsg.ec-notice {
+  margin-top: 0;
+  padding: 10px 16px;
+  border-radius: 0;
+  /* ⚠️ 2026-07-31 手测:带按钮的条幅(重新生成确认)比纯文字条幅(端口脏态)明显更厚 ——
+   * 按钮自身高度约 24px、单行文字约 20px,前后脚出现时像两种控件。
+   * 给一个**按有按钮那档算出来的**下限,两者高度就一致了;文案换行时仍照常长高。 */
+  min-height: 44px;
+}
+
+.extension-channel .ec-err {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+/* ★ 醒目行内提示(未提交脏态 / 重新生成的行内确认):**刻意不用 toast**,
+ * 因为这两条都是「你现在还差一步没做完」——一闪而过等于没提示。
+ * ⚠️ 「扩展里的端口也要改成 N」原本也在这里,2026-07-31 用户手测后**已改走 toast + 常驻只读行**
+ * (每改一次端口就要点一遍「我知道了」,代价大于收益)。用 --warning 系 token 表达「需要你去做一件事」。
+ *
+ * 布局要点(2026-07-31 手测):文字与按钮**必须各占一列** —— 文字 flex:1 +
+ * 按钮 flex-shrink:0 + nowrap;否则长文案换行后会把按钮挤成孤零零的一行(「一次新配对码。[取消]」)。 */
+.extension-channel .ec-notice {
+  display: flex;
+  /* ⚠️ 2026-07-31 手测:原为 `flex-start`,单行文案会贴条幅顶端、与右侧按钮不在一条线上。
+   * 改 `center` 只影响**交叉轴对齐**,不影响当初 flex-start 那次真正要解决的问题
+   * (长文案换行后按钮被挤成孤零零一行 —— 那由下面的 flex:1 / flex-shrink:0 / nowrap 管)。 */
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--warning);
+  background: var(--warning-subtle);
+  border-radius: var(--radius-control);
+}
+
+.extension-channel .ec-notice > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.extension-channel .ec-notice .btn {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* `.ec-notice-dirty` **刻意没有任何样式声明**,只作语义标记(测试与排查时定位「未提交脏态」那一条)。
+ * ⚠️ 2026-07-31 手测 A10:此处原为 `font-weight: 500`,与 `.ec-notice` 的 600 差一档 ——
+ * 两条提示前后脚出现时字重肉眼可辨、像是两种控件,而这个差异**没有理由**,故取消。
+ * 脏态与其它提示是同一件事的两种时机,视觉语言必须一致。 */
+
+/* 行内二次确认:两个按钮成组,不被文字换行冲散 */
+.extension-channel .ec-confirm-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* 配对码:等宽显示,遮蔽态与明文态同一容器(默认遮蔽,明文只在用户点「显示」后才进 DOM) */
+.extension-channel .ec-token {
+  margin-top: 7px;
+}
+
+.extension-channel .ec-token code {
+  display: inline-block;
+  max-width: 100%;
+  padding: 5px 9px;
+  font-family: 'Cascadia Mono', 'Consolas', monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-control);
+  overflow-wrap: anywhere;
+}
+
+/* #42 发现引导:整段是说明文而非设置项,故顶端对齐 */
+.extension-channel .ec-guide {
+  margin-top: 10px;
+}
+
+.extension-channel .ec-guide .set-row {
+  align-items: flex-start;
+}
+
+.extension-channel .ec-path-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.extension-channel .ec-path {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-secondary);
+}
+
+.extension-channel .ec-steps {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: var(--text-secondary);
+}
+
+/* `edge://extensions/` 是**可复制文本,不是链接**(Electron 无法可靠打开外部浏览器的内部页) */
+.extension-channel .ec-steps code {
+  padding: 1px 6px;
+  font-family: 'Cascadia Mono', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-control);
+  user-select: all;
+}
+
+/* 诚实边界(浏览器支持范围;逐字文案在 ExtensionChannelSettings.tsx 的 BROWSER_SUPPORT_NOTE) */
+.extension-channel .ec-honest {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--divider);
+}
+
+/* 端口对齐的常驻只读提示:比 .sr-desc 强调一档、但**不是**警示色块 ——
+ * 它陈述的是一个持续为真的事实(当前生效端口),不是一件待办,故不用 .ec-notice 的警示语言。 */
+.extension-channel .ec-port-align {
+  color: var(--warning);
+  font-weight: 500;
+}
+
+/* ── 下载接管子区(v0.4 Task 4 Step 6a · spec §5.5)──────────────────────────
+ * 三行全部复用既有类:.set-row / .sr-* / .switch / .btn / .chip / .ext-chip / .ext-x / .ext-add。
+ * 本段**只补布局,零色值** —— 上面整份文件的纪律在此不变。 */
+
+/* 子区与上方「安装浏览器扩展」卡片留同样的间距(与 .ec-guide 的 margin-top 一致) */
+.extension-channel .ec-takeover {
+  margin-top: 10px;
+}
+
+/* 域名标签行:.ext-tags 已给 flex/wrap/gap,这里只放宽输入框
+ * ——「+ 添加域名」比「+ 添加」长,72px 装不下(.ext-add 的宽度是为扩展名定的) */
+.extension-channel .ec-domain-add {
+  width: 112px;
+}
+
+/* 例外表为空时 .ext-tags 只剩输入框,顶到描述文字上;给一点呼吸 */
+.extension-channel .ec-domains {
+  margin-top: 8px;
+}

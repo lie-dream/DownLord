@@ -1,0 +1,66 @@
+/**
+ * 全局基础控件样式 — 开关 .switch / 下拉 .select 的单一来源(spec §2.1)。
+ *
+ * - 从 FormatDialog.css(.switch)与 AddTaskDialog.css(.select)抽出,消除「设置页 / 对话框样式
+ *   依赖彼此 .css 被加载」的隐患;FormatDialog / BatchDialog / AddTaskDialog / SettingsPage 均经 tsx import 引用本文件。
+ * - 1:1 搬运既有定义,视觉零变化;全部色值取自 tokens.css 变量,不另造色值(DESIGN §6)。
+ * - .switch 用 <button> 承载(故含 border / padding / appearance 重置);旋钮白点为复刻原型既有功能色(非另造)。
+ * - .select 含自定义下拉箭头(data-uri svg,复刻原型 prototype line 242–246)。
+ */
+
+/* 开关(原型 .switch,此处用 button 承载,需重置默认样式) */
+.switch {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--text-tertiary);
+  cursor: pointer;
+  transition: 0.15s;
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+  appearance: none;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: 0.15s;
+}
+
+.switch.on {
+  background: var(--brand);
+}
+
+.switch.on::after {
+  left: 23px;
+}
+
+/* 下拉(复刻原型 .select,line 242–246) */
+.select {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 28px 6px 10px;
+  color: var(--text-primary);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius-control);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.select:focus {
+  border-color: var(--brand);
+}

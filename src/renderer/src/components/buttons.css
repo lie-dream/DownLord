@@ -1,0 +1,132 @@
+/**
+ * 公共按钮 / 控件样式 — 复刻内部设计原型的按钮体系,使用 tokens.css 变量。
+ *
+ * - 由 App.tsx 全局 import 一次,各组件直接用 class(不另抽 React 组件,见 spec §2.1)。
+ * - 覆盖:.btn / .btn-primary / .btn-default / .btn-subtle / .icon-btn(+.danger)/ .pill / .chip。
+ * - 禁止另造色值(DESIGN §6)— 全部走 tokens 变量。
+ */
+
+/* ============ 普通按钮 ============ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 13px;
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-default {
+  background: var(--bg-layer);
+  border-color: var(--stroke-strong);
+  color: var(--text-primary);
+}
+
+.btn-default:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: var(--text-on-brand);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.btn-subtle {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-subtle:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ============ 图标按钮 ============ */
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.icon-btn:hover {
+  background: var(--bg-selected);
+  color: var(--text-primary);
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ============ 胶囊 ============ */
+.pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+}
+
+.pill.wait {
+  background: var(--bg-selected);
+  color: var(--text-secondary);
+}
+
+.pill.action {
+  background: var(--brand);
+  color: var(--text-on-brand);
+  cursor: pointer;
+}
+
+/* ============ 类型筛选 chip(本 Task 不渲染,样式预留 Task 6)============ */
+.chip {
+  font-size: 12.5px;
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--stroke-strong);
+  background: var(--bg-layer);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chip.active {
+  background: var(--brand-subtle);
+  color: var(--brand);
+  border-color: transparent;
+  font-weight: 600;
+}

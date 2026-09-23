@@ -1,0 +1,125 @@
+appId: com.downlord.app
+productName: DownLord
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  # v0.4 Task 2:扩展源码不进 asar(dist 走下面的 extraResources)。files 段全是负向模式 =
+  # 默认 **/* 再逐条排除,extension/ 不在任何排除项中 → 不补就会被整目录打进 asar 当死重量。
+  # 写 '!extension/*' 而非 '!extension/**' 是与紧邻的 '!src/*' 保持同一写法(spec §2.5b)。
+  - '!extension/*'
+  - '!resources/*'
+  # 本地声明仅从根唯一源复制到 resources 根，不在 asar 再放一份。
+  - '!THIRD-PARTY-NOTICES.md'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  # v0.4 Task 7(#44):下面这批全是「仓库里有、运行时永远不读」的东西。files 段是负向模式
+  # (默认 **/* 再逐条排除),不写就整目录进 asar —— 那不只是死重量,还等于把内部设计文档、
+  # AI 协作规则、原型 HTML 一并发给最终用户(信息暴露面)。已核实运行时只读 <resources>/bin、
+  # <resources>/extension、<userData>/ 下的 config/bin/SQLite,不读 asar 内的 docs/;scripts/ 全是构建脚本。
+  # '!tsconfig*.json' 取代原先逐个点名的三条 —— 那三条漏了 tsconfig.extension.json。
+  - '!tsconfig*.json'
+  - '!docs'
+  - '!.claude'
+  - '!tests'
+  - '!scripts'
+  - '!AGENTS.md'
+  - '!CLAUDE.md'
+  - '!CONTEXT.md'
+  - '!*.log'
+  - '!prototype-*.html'
+  # 发布覆盖源与本机探针不属于运行时资源，不能进入 asar。
+  - '!publish{,/**/*}'
+  - '!.tmp-probe{,/**/*}'
+# 三引擎二进制复制到安装态 process.resourcesPath/bin(运行时 resolveBinDir 打包态落点,spec §4.2 修复 / ARCHITECTURE §7.5)
+# 方案 A:用 extraResources 落 <resources>/bin,与 locator.resolveBinDir 打包态(process.resourcesPath/bin)一致
+#   —— 原 extraFiles 落 app 根 bin/,与 locator 定位不一致致打包态找不到二进制,本步修复。
+extraResources:
+  - from: resources/bin
+    to: bin
+    filter:
+      - 'aria2c.exe'
+      - 'ffmpeg.exe'
+      - 'yt-dlp.exe'
+      - 'aria2-LICENSE.txt'
+      - 'ffmpeg-LICENSE.txt'
+      - 'yt-dlp-LICENSE.txt'
+      - 'license-notices/**/*'
+      - 'license-provenance.json'
+  # 许可声明唯一维护源；关于页主进程打开 resources 根的这个固定文件。
+  - from: THIRD-PARTY-NOTICES.md
+    to: THIRD-PARTY-NOTICES.md
+  # v0.4 Task 2:扩展 dist 落 <resources>/extension,与三引擎落 <resources>/bin 同构(spec §2.5a)——
+  # 装了 exe 的用户才有一条可复制粘贴的死路径来旁加载:
+  #   %LOCALAPPDATA%\Programs\DownLord\resources\extension
+  # 顺序有保证:npm run package = npm run build && electron-builder,而 build 已含扩展构建(spec §6.1)。
+  - from: extension/dist
+    to: extension
+# 代码签名预留口(v0.2 未签名;签名实现留 v0.3 · TODO #17,spec §3.2):
+# 如需对 Windows NSIS 安装包签名,设环境变量注入,**无需改本 yml 结构**:
+#   · CSC_LINK         —— 证书文件路径或 base64(.pfx / .p12)
+#   · CSC_KEY_PASSWORD —— 证书密码
+# electron-builder 打包时自动据此签名。证书 / 密钥文件**绝不入库**(.gitignore 已覆盖 *.pfx / *.p12 / .env*);
+# 未设时留空即 best-effort 不签名、不阻塞打包(现状:出未签名包),SmartScreen「未知发布者」提示由 README 如实说明。
+# v1.0 Task 3(T1-006 / T1-007 · Electron 官方 Security Checklist 条 19):关掉两个默认开启的 fuse。
+# 改前实证:`ELECTRON_RUN_AS_NODE=1 dist/win-unpacked/DownLord.exe -p "process.versions.node"` 输出
+# `22.22.1` —— 打包产物可被当通用 Node 运行时使用(装了 DownLord 就等于装了一个可执行 Node)。
+#   · runAsNode                     关 —— 断掉 ELECTRON_RUN_AS_NODE 这条通用 Node 运行时入口
+#   · enableNodeCliInspectArguments 关 —— 断掉 --inspect 一族调试端口(否则可附加调试器进主进程)
+# 🔴 只列这两项,其余 fuse **保持 Electron 默认**(不扩范围):onlyLoadAppFromAsar / 完整性校验一族
+#    会改变加载路径与签名前置条件,不在本 Task 的认领范围内。
+# ⚠️ 本项目的测试 runner 也跑在 electron-as-node 上,但那是 `node_modules/electron`(开发树),
+#    fuse 只作用于 electron-builder 打出的产物 ⇒ 测试通路不受影响(已实测,见交付说明)。
+electronFuses:
+  runAsNode: false
+  enableNodeCliInspectArguments: false
+win:
+  executableName: DownLord
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  # 可选安装路径(v0.1 验收提出):oneClick=false 启用向导式安装器,
+  # allowToChangeInstallationDirectory=true 显示「选择安装目录」页(默认仍 per-user,不需提权)。
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  target:
+    - AppImage
+    - snap
+    - deb
+  maintainer: electronjs.org
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+# v0.2 Task 6 落地 / Task 7 固化:应用本体自动更新(electron-updater + GitHub Releases 公开仓库,spec §2.1/§3.1 · TODO #8)。
+# 打包时据此 publish 段生成 `latest.yml`(含 version / 文件名 / sha512 / blockmap 元数据),
+# 发布产物三件联动:`downlord-<version>-setup.exe` + `latest.yml` + `<setup>.exe.blockmap`;
+# 用户发布时三件一并挂到同一 GitHub Release,autoUpdater 据 latest.yml 判新版、按 blockmap 差量下载。
+# owner / repo 已按 v1.0 公开仓库目标对齐；配置对齐不等于更新链路已验收。
+# 公开仓库匿名可读 Releases,electron-updater 无需 GH_TOKEN(仅私有仓库才需 token)。
+# 未签名 NSIS + latest.yml 亦可正常更新;SmartScreen「未知发布者」提示由 README 如实说明(代码签名留 v0.3 #17)。
+# 发布节奏:electron-builder `--publish` 默认建 **draft** Release,用户先核对产物无误再手动 publish(避免误发);
+# 本项目 `package` 脚本**不含 `--publish`**——发布是用户显式手动动作,不自动化进构建(spec §2.1/§7)。
+publish:
+  provider: github
+  owner: lie-dream
+  repo: DownLord

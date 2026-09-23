@@ -1,0 +1,9 @@
+/**
+ * 任务列表容器样式 — 复刻原型 .task-list,可纵向滚动。
+ */
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 14px 14px;
+}

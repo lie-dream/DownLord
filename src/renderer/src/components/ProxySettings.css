@@ -1,0 +1,90 @@
+/**
+ * 代理三档样式 — 复刻内部设计原型的 .radio-row/.radio/.tag-rec/.rr-*。
+ *
+ * - .set-group/.sg-title/.set-card 复用 SettingsPage.css(已落,全局),本文件不重定义。
+ * - radio 样式一律 scoped 到 .radio-row 下,避免与 FormatDialog 的全局 .radio 冲突。
+ * - .input 复用全局类(AddTaskDialog.css),仅追加宽度与无效态;全部色值走 theme/tokens.css 变量,绝不另造。
+ */
+
+.radio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  cursor: pointer;
+}
+
+.radio-row + .radio-row {
+  border-top: 1px solid var(--divider);
+}
+
+.radio-row .radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 2px solid var(--text-tertiary);
+  border-radius: 50%;
+  transition: border-color 0.15s;
+}
+
+.radio-row.sel .radio {
+  border-color: var(--brand);
+}
+
+.radio-row.sel .radio::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.radio-row .rr-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.radio-row .rr-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.tag-rec {
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-subtle);
+  border-radius: 6px;
+}
+
+.radio-row .rr-desc {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.radio-row .rr-extra {
+  margin-top: 9px;
+}
+
+.radio-row .rr-extra .input {
+  width: 260px;
+  max-width: 100%;
+}
+
+/* 手动地址非法:可见无效态(诚实、不静默)— 仅红描边,不另造色值 */
+.radio-row .rr-extra .input.invalid {
+  border-color: var(--danger);
+}
+
+.radio-row .rr-err {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--danger);
+}

@@ -1,0 +1,12 @@
+/**
+ * 类型筛选 chips 容器 — 复刻原型 .filter-bar(chip 本体样式在 buttons.css,全局已 import)。
+ * 仅布局 + 分隔线,全部走 tokens.css 变量(禁止另造色值,DESIGN §6)。
+ */
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--divider);
+  flex-wrap: wrap;
+}

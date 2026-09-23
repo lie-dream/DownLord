@@ -1,0 +1,399 @@
+/**
+ * 任务行样式 — 复刻原型 .task 及子元素,使用 tokens.css 变量。
+ *
+ * - .t-icon 按类别配色(video=brand / audio=warning / file=success / error=danger)。
+ * - 进度条三态:determinate(brand)/ paused(灰填充)/ indeterminate(indet 流动)/ processing(proc warning)。
+ * - 副信息语义色:ok=success / err=danger / warn=warning;速度三色:brand / muted / warning。
+ */
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  border-radius: var(--radius-card);
+  border: 1px solid transparent;
+  transition: background 0.12s;
+}
+
+.task:hover {
+  background: var(--bg-hover);
+}
+
+.task + .task {
+  margin-top: 2px;
+}
+
+.t-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.t-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.t-icon.video {
+  background: var(--brand-subtle);
+  color: var(--brand);
+}
+
+.t-icon.audio {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.t-icon.file {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+
+.t-icon.error {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.t-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.t-name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-sub {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.t-sub .ok {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--success);
+}
+
+.t-sub .err {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--danger);
+}
+
+.t-sub .ok svg,
+.t-sub .err svg {
+  width: 13px;
+  height: 13px;
+}
+
+.t-sub .warn {
+  color: var(--warning);
+}
+
+/* 清晰度标签(Task 8.5 §3.3):复用 .pill 形态 + 中性 token,与状态文案并存,绝不另造色值 */
+.t-quality {
+  background: var(--bg-selected);
+  color: var(--text-tertiary);
+}
+
+/* 「做种中」pill(v0.3 Task 3):复用 .pill 形态 + success token(语义=正在贡献 / 健康),零新造色值 */
+.pill.seed {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+
+/* ---------- 进度条 ---------- */
+.bar {
+  height: 4px;
+  margin-top: 9px;
+  background: var(--bg-selected);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--brand);
+}
+
+.bar.paused > span {
+  background: var(--text-tertiary);
+}
+
+.bar.indet > span {
+  width: 35%;
+  background: var(--brand);
+  animation: indet 1.3s ease-in-out infinite;
+}
+
+.bar.proc > span {
+  background: var(--warning);
+}
+
+@keyframes indet {
+  0% {
+    margin-left: -35%;
+  }
+  100% {
+    margin-left: 100%;
+  }
+}
+
+/* ---------- 右侧 meta ---------- */
+.t-meta {
+  text-align: right;
+  flex-shrink: 0;
+  min-width: 96px;
+}
+
+.t-pct {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.t-pct.muted {
+  color: var(--text-tertiary);
+}
+
+.t-speed {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.t-speed.muted {
+  color: var(--text-tertiary);
+}
+
+.t-speed.warning {
+  color: var(--warning);
+}
+
+/* 做种上行(v0.3 Task 3):success 绿(↑ 上行,与下行蓝 --brand 区分),复用既有 token 零新造色值 */
+.t-speed.upload {
+  color: var(--success);
+}
+
+.t-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* ---------- 「更多」菜单(Task 9.5 · 自定义轻量 popover)---------- */
+/* 锚定 ⋯ 按钮;菜单 absolute 定位,不写死色值,全走 DESIGN token,浅 / 深色一致 */
+.task-more {
+  position: relative;
+}
+
+.task-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  min-width: 244px;
+  padding: 6px;
+  background: var(--bg-layer);
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-flyout);
+}
+
+/* 底部空间不足时向上展开(不溢出窗口) */
+.task-menu.up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+/* 信息区(只读) */
+.tm-info {
+  padding: 4px 8px;
+}
+
+.tm-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 3px 0;
+  font-size: 12.5px;
+}
+
+.tm-label {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.tm-value {
+  margin-left: auto;
+  min-width: 0;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.tm-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 分隔线 */
+.tm-divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--divider);
+}
+
+/* 操作区(未来分享 / 复制链接等挂此处) */
+.tm-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 8px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-control);
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.tm-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tm-item:hover {
+  background: var(--bg-selected);
+  color: var(--text-primary);
+}
+
+.tm-item.danger:hover {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+/* ---------- 单任务限速 popover(Task 2 · 复用 .task-menu 壳 + token,零新造色值)---------- */
+.task-limit {
+  position: relative;
+}
+
+/* 复用 .task-menu(bg-layer / stroke / shadow-flyout / .up 翻转);此处仅收窄并改为纵向表单布局 */
+.task-menu.limit-menu {
+  min-width: 232px;
+  padding: 10px;
+}
+
+.lm-title {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+/* 限速模式二选一(v0.3 Task 4 #25 第三态):跟随全局 / 自定义。
+   圆形 radio 视觉与 ProxySettings 的 .radio-row 同款(未选 --text-tertiary 描边 / 选中 --brand 实心点),
+   但**自包含在 .limit-menu 作用域**——不跨组件依赖 ProxySettings.css 被加载,且 popover 内需更紧凑的行高。
+   色值全走 token,零新造。 */
+.lm-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.lm-mode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.lm-mode:hover {
+  background: var(--bg-selected);
+  color: var(--text-primary);
+}
+
+.lm-mode.sel {
+  color: var(--text-primary);
+}
+
+.lm-mode .lm-radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--text-tertiary);
+  border-radius: 50%;
+  transition: border-color 0.15s;
+}
+
+.lm-mode.sel .lm-radio {
+  border-color: var(--brand);
+}
+
+.lm-mode.sel .lm-radio::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.lm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lm-row .lm-input {
+  width: 72px;
+}
+
+.lm-unit {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.lm-row .btn {
+  margin-left: auto;
+}
+
+/* 视频任务:诚实标注「下次继续生效」(§5.4;不承诺运行中即时改速) */
+.lm-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}

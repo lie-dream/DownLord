@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: windows-latest # 贴近目标 OS;Windows electron.exe 无 GTK/NSS 等 GUI 共享库依赖,纯 node 模式免 DISPLAY/xvfb(spec §5.3)
+    env:
+      CI: 'true' # 触发 integration.test.ts「node:sqlite 不可用即 throw 不静默 skip」守卫(R2)
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22 # 宿主 node 跑 npm/electron-vite/tsc;测试真跑用 electron 自带 Node(electron-as-node)
+          cache: npm
+      # 🔴 必须钉住 packageManager 声明的那一版:node 22 自带 npm 10.9.8,而本仓 lock 由 npm 11 生成。
+      # npm 10 认为 tsx 的 esbuild@~0.28.0 需嵌套安装(顶层钉死 0.27.2 不满足)、lock 里无此条目 → `npm ci` 直接
+      # EUSAGE「Missing: esbuild@0.28.2 from lock file」。同一份 lock 在 npm 11.11.0 下 `added 740 packages`(已双向对照)。
+      - run: npm i -g npm@11.11.0
+      - run: npm ci # 去 native + 无 postinstall rebuild → 纯装 JS 依赖
+      - name: 获取 Electron 二进制(electron ≥42 无 postinstall,首次 require 才下载;独立成步以便失败归因)
+        run: node node_modules/electron/install.js
+      # 🔴 build 必须在 test 之前:三个产物级测试(extension/build·artifact、src/preload/preloadArtifact)读的是
+      # extension/dist/ 与 out/,而两者都在 .gitignore 内、不入库。开发机上产物早已存在故看不出来,
+      # CI 的全新 checkout 必红 22 个断言。故此处与 scripts/gate.mjs 的顺序**刻意不同**。
+      - run: npm run build # electron-vite build 三侧产物 + 扩展产物
+      - run: npm test # 经 electron-as-node;CI=true → Section A 七链路真跑、不可静默 skip
+      - run: npm run typecheck # tsc 三侧(纯 node)
+      - run: npm run lint # eslint --quiet,判据 0 error

@@ -1,0 +1,144 @@
+/**
+ * BT 文件选择对话框样式(v0.3 Task 2 · spec §6.1)—— 仅布局类(.bt-*),全部色值取自 tokens.css,零新造色值(DESIGN §6)。
+ *
+ * - 公共骨架(.overlay / .dialog / .dialog-head / .dialog-body / .dialog-foot / .dialog-close / .btn / .pill)
+ *   复用全局样式(AddTaskDialog.css + buttons.css);全选 / 反选链接复用 BatchDialog 的 .link-btn(App 内常驻挂载,
+ *   样式全局可用),避免两份骨架 / 链接漂移。本文件只补「信息条 + 全选合计条 + 扁平清单行 + 落点」专属类。
+ * - 方形勾选框 .check 沿用 BatchDialog 已确立的方形范式(对应 FormatDialog 圆形 .radio);清晰度 / 大小胶囊复用 .pill
+ *   基类,在 .bt-row 作用域补中性底 / 次文字色(取 token,与 DuplicateDialog 同源观感),不新增 class、不造色值。
+ */
+
+/* 头部信息条(种子名 + 文件数 · 总大小;退化自 .vinfo) */
+.bt-info {
+  margin-bottom: 14px;
+}
+
+.bt-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bt-sub {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 全选 / 反选 + 已选合计条 */
+.bt-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.bt-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.bt-count {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 扁平文件清单(边框容器,仿 .fmt-list;上百文件靠 .dialog-body overflow-y 滚动) */
+.bt-list {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.bt-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.bt-row + .bt-row {
+  border-top: 1px solid var(--divider);
+}
+
+.bt-row:hover {
+  background: var(--bg-hover);
+}
+
+.bt-row.sel {
+  background: var(--brand-subtle);
+}
+
+/* 方形勾选框(对应 FormatDialog 圆形 .radio,此处文件多选用方形 + 对勾,同 BatchDialog) */
+.bt-row .check {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--text-tertiary);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  transition: 0.12s;
+}
+
+.bt-row.sel .check {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+
+.bt-row .check svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 相对路径(ellipsis + title 悬浮全路径) */
+.bt-path {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 大小胶囊:复用 .pill 基类,补中性底 / 次文字(token,与 DuplicateDialog 同源;.pill 基类无 bg/color) */
+.bt-row .pill {
+  flex-shrink: 0;
+  background: var(--bg-selected);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 落点行(仿 FormatDialog .save-to;诚实显示 <Torrents>/<种子名>) */
+.bt-save {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid var(--divider);
+  font-size: 12.5px;
+}
+
+.bt-save-label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.bt-save-dir {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}

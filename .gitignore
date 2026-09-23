@@ -1,0 +1,30 @@
+node_modules/
+out/
+dist/
+*.log
+*.log*
+.DS_Store
+.env
+.env.*
+.eslintcache
+
+# 覆盖率原始产物(lcov / 分母清单 json / V8 dump):只有数字快照入库,原始产物永不进 git
+coverage/
+
+# 签名密钥 / 证书:绝不入库(Task 9 §5.3,v0.1 不签名,证书留 TODO)
+*.pfx
+*.p12
+*.key
+*.pem
+secrets*
+
+# 二进制:三引擎真二进制 + 出包产物一律不入库(体积 + 许可,spec §4.1 / §5.3)
+*.exe
+
+resources/bin/*.exe
+!resources/bin/.gitkeep
+!resources/bin/README.md
+
+# 本地探针取证与 Claude Code 个人配置：保留本机，不入库
+/.tmp-probe/
+/.claude/settings.local.json

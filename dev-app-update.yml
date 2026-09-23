@@ -1,0 +1,11 @@
+# dev-app-update.yml — 开发态 electron-updater 联调配置(v0.2 Task 6 · spec §3.1)。
+#
+# 作用:`npm run dev`(未打包)时 electron-updater 从此文件读 provider,使检查链路
+# (checkForUpdates → update-available / -not-available / error 事件)在不打包的情况下也能联调。
+# 打包态则读安装包内 electron-builder 生成的 app-update.yml(由 electron-builder.yml 的 publish 生成)。
+#
+# 已被 electron-builder.yml 的 files 排除(`!dev-app-update.yml`),不入安装包。
+# owner / repo 与正式打包目标一致；公开仓库匿名可读 Releases，无需 token。
+provider: github
+owner: lie-dream
+repo: DownLord

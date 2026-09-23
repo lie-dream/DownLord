@@ -1,0 +1,28 @@
+/**
+ * 全局基础样式 — 重置默认样式,应用 tokens.css 变量。
+ *
+ * - box-sizing 统一为 border-box,margin/padding 归零。
+ * - body 使用 --font / --bg-base / --text-primary,覆盖全局。
+ * - 抗锯齿平滑(-webkit-font-smoothing)。
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}

@@ -1,0 +1,76 @@
+{
+  "name": "downlord",
+  "productName": "DownLord",
+  "version": "1.0.0",
+  "description": "DownLord desktop downloader shell",
+  "author": "lie-dream",
+  "main": "./out/main/index.js",
+  "packageManager": "npm@11.11.0",
+  "engines": {
+    "node": ">=22.12",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "dev:fake": "cross-env DOWNLORD_FAKE_ENGINE=1 electron-vite dev",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web && npm run typecheck:ext",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck:ext": "tsc --noEmit -p tsconfig.extension.json --composite false",
+    "test": "node scripts/run-node-tests.mjs",
+    "coverage": "node scripts/run-node-tests.mjs --coverage",
+    "gate": "node scripts/gate.mjs",
+    "lint": "eslint . --quiet",
+    "lint:all": "eslint .",
+    "build": "electron-vite build && node scripts/build-extension.mjs",
+    "dev:extension": "node scripts/build-extension.mjs --watch",
+    "package": "npm run build && electron-builder --win --config",
+    "start": "electron-vite preview",
+    "audit:todo": "node scripts/audit-todo-assignments.mjs",
+    "scan:secrets": "node scripts/scan-secrets.mjs",
+    "scan:licenses": "node scripts/scan-licenses.mjs",
+    "release:prepare": "node scripts/release.mjs prepare",
+    "release:check": "node scripts/release.mjs check",
+    "test:release": "node --test scripts/release/release.test.mjs"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
+    "electron-log": "^5.4.4",
+    "electron-updater": "^6.8.9"
+  },
+  "overrides": {
+    "vite": {
+      "esbuild": "0.27.2"
+    }
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@fluentui/react-components": "^9.0.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/chrome": "^0.2.2",
+    "@types/node": "^22.19.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^5.1.1",
+    "adm-zip": "^0.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^43.6.0",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^5.0.0",
+    "esbuild": "0.27.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.7.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6"
+  }
+}

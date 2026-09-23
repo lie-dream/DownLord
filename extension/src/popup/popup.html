@@ -1,0 +1,303 @@
+<!doctype html>
+<!--
+  popup 静态骨架(v0.4 Task 2 立 · Task 3 加配对表单 · Task 5 Phase 2 三区重构
+  · Task 6 在最上面加「区零」整页视频入口)
+  ——构建时原样拷贝进 extension/dist/,不经 bundle。
+
+  ⚠️ MV3 的 CSP 禁内联脚本,`<script>` 必须外链 popup.js;内联样式表(<style>)则是允许的。
+
+  ★ **配色自成一体,本文件就是它的实现、`docs/DESIGN.md` §7 就是它的规范真源**:
+    popup **不共享** src/renderer/src/theme/tokens.css,**也不承诺与主程序同步**。
+    - 不手抄一份 token 副本 —— 手抄会制造一份**必然漂移**的副本,而「两处人工同步」靠自觉、无机器兜底;
+    - 暗色**跟随系统** prefers-color-scheme,**不跟随 DownLord 主题设置** —— 后者要实时查主进程,
+      而通道可能根本没连上;**未配对时 popup 照样要好看,外观不能依赖连接状态**。
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>DownLord Connector</title>
+    <style>
+      /* ── 自成一体的一小组色值(主色 = 品牌蓝,与 DESIGN §7 第 5 条同基准)────────── */
+      :root {
+        --pop-brand: #0f6cbd;
+        --pop-brand-hover: #115ea3;
+        --pop-text: #202020;
+        --pop-text-2: #616161;
+        --pop-danger: #a4262c;
+        --pop-bg: #fff;
+        --pop-layer: #f5f5f5;
+        --pop-stroke: #e0e0e0;
+        --pop-badge-bg: #eaf2fb;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --pop-brand: #479ef5;
+          --pop-brand-hover: #62abf5;
+          --pop-text: #f0f0f0;
+          --pop-text-2: #adadad;
+          --pop-danger: #f1707b;
+          --pop-bg: #202020;
+          --pop-layer: #272727;
+          --pop-stroke: #3d3d3d;
+          --pop-badge-bg: #2b3a4a;
+        }
+      }
+
+      body {
+        margin: 0;
+        padding: 12px 14px;
+        /* ★ 380px(原 280):资源行要放「文件名 + 徽章 + 大小 + 按钮」四段,
+           280px 会把文件名截到看不出是什么,而文件名正是判断「要不要下这条」的唯一依据 */
+        width: 380px;
+        box-sizing: border-box;
+        font:
+          13px/1.6 system-ui,
+          'Segoe UI',
+          sans-serif;
+        color: var(--pop-text);
+        background: var(--pop-bg);
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      button {
+        padding: 4px 10px;
+        font: inherit;
+        color: inherit;
+        background: var(--pop-layer);
+        border: 1px solid var(--pop-stroke);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--pop-brand);
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+
+      /* ── 区零:整页视频入口(v0.4 Task 6)───────────────────────────── */
+      .page-video {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+      .page-video-go {
+        justify-self: stretch;
+        color: #fff;
+        background: var(--pop-brand);
+        border-color: var(--pop-brand);
+        padding: 6px 10px;
+        font-weight: 600;
+      }
+      .page-video-go:hover:not(:disabled) {
+        background: var(--pop-brand-hover);
+      }
+      /* 那一行实话:成败都用同一种低调色 —— 它既可能是「已交给…」也可能是「读不到地址」,
+         用危险色会把一句正常的告知渲染成故障 */
+      .page-video-msg {
+        color: var(--pop-text-2);
+        font-size: 12px;
+      }
+
+      /* ── 区一:本页资源 ───────────────────────────────────────────────── */
+      .resources {
+        margin-bottom: 10px;
+      }
+      .res-head {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .res-title {
+        font-weight: 600;
+      }
+      .sniff-count {
+        color: var(--pop-text-2);
+        flex: 1;
+      }
+      .sniff-toggle {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        color: var(--pop-text-2);
+      }
+      /* ★ 资源区超高时**内部滚动** —— 接管行与诊断区不被顶出视口(DESIGN §7 第 1 条) */
+      .res-body {
+        max-height: 320px;
+        overflow-y: auto;
+        border: 1px solid var(--pop-stroke);
+        border-radius: 4px;
+        padding: 6px;
+        background: var(--pop-layer);
+      }
+      .res-group + .res-group {
+        margin-top: 8px;
+      }
+      .res-group-title {
+        color: var(--pop-text-2);
+        font-size: 12px;
+      }
+      .res-group-note,
+      .res-notice,
+      .res-foot > div {
+        color: var(--pop-text-2);
+        font-size: 12px;
+      }
+      .res-notice {
+        padding: 2px 0;
+      }
+      .res-foot {
+        margin-top: 6px;
+      }
+      .res-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 0;
+      }
+      /* ★ CSS 截断,**不截字符串** —— 完整 URL 只走原生 title tooltip */
+      .res-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .res-badge {
+        font-size: 11px;
+        padding: 0 5px;
+        border-radius: 3px;
+        color: var(--pop-brand);
+        background: var(--pop-badge-bg);
+      }
+      .res-size {
+        color: var(--pop-text-2);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .res-download {
+        color: #fff;
+        background: var(--pop-brand);
+        border-color: var(--pop-brand);
+        padding: 2px 10px;
+      }
+      .res-download:hover:not(:disabled) {
+        background: var(--pop-brand-hover);
+      }
+      .res-note {
+        color: var(--pop-text-2);
+        font-size: 12px;
+        padding-left: 2px;
+      }
+      .res-error {
+        color: var(--pop-danger);
+        font-size: 12px;
+        padding-left: 2px;
+      }
+      .res-empty {
+        color: var(--pop-text-2);
+        display: grid;
+        gap: 6px;
+        justify-items: start;
+      }
+      .res-empty-text {
+        color: var(--pop-text);
+      }
+      .res-empty-small {
+        font-size: 12px;
+      }
+
+      /* ── 区二:接管状态(常驻一行)+ 连接告警(仅异常时) ─────────────── */
+      .takeover {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .takeover-head {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .takeover-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .connection-alert {
+        margin-bottom: 8px;
+        color: var(--pop-danger);
+      }
+
+      /* ── 区三:诊断信息(<details> 默认折叠,零 JS 折叠逻辑)──────────── */
+      .diag {
+        border-top: 1px solid var(--pop-stroke);
+        padding-top: 6px;
+      }
+      .diag > summary {
+        cursor: pointer;
+        color: var(--pop-text-2);
+      }
+      .diag-body {
+        padding-top: 8px;
+      }
+      .rows {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 12px;
+      }
+      .row {
+        display: contents;
+      }
+      .label {
+        color: var(--pop-text-2);
+        white-space: nowrap;
+      }
+      .value {
+        word-break: break-all;
+        font-family: Consolas, 'Cascadia Mono', monospace;
+      }
+      .pair {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .field {
+        display: grid;
+        grid-template-columns: 60px 1fr auto;
+        align-items: center;
+        gap: 6px;
+      }
+      .field input {
+        min-width: 0;
+        padding: 4px 6px;
+        font: inherit;
+        color: inherit;
+        background: var(--pop-bg);
+        border: 1px solid var(--pop-stroke);
+        border-radius: 4px;
+      }
+      .status {
+        margin-bottom: 4px;
+      }
+      .message {
+        margin-bottom: 10px;
+        min-height: 1.6em;
+        color: var(--pop-danger);
+      }
+      .buildid-warning {
+        margin-top: 8px;
+        color: var(--pop-danger);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DownLord Connector</h1>
+    <div id="root"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+/**
+ * 「浏览器扩展」页样式(v0.4 Task 5 · spec §5)—— **只有布局,零新造色值**。
+ *
+ * 结构类 `.set-group` / `.sg-title` / `.set-card` / `.set-row` / `.sr-*` / `.up-note` 全部复用
+ * SettingsPage.css 的全局定义(App 静态 import SettingsPage,故必被注入);本文件只补:
+ * ① 页级滚动容器(参数与 `.settings-scroll` 一致,本页没有左侧子导航故不用两栏布局);
+ * ② 两个作用域内的小类 —— `.ec-sub` / `.ec-inline` 挂在 `.extension-channel` 下(设置页作用域),
+ *    本页够不着,故同参数各自定义为 `.ep-sub` / `.ep-inline`,颜色仍走 tokens.css 变量。
+ */
+
+/* 页级滚动容器(与 .settings-scroll 同参数) */
+.extension-page {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 24px 24px;
+}
+
+/* 次要说明行(与设置页 .ec-sub 同参数) */
+.extension-page .ep-sub {
+  margin-top: 4px;
+  color: var(--text-secondary);
+}
+
+/* ============ 文字层级(2026-08-11 用户手测)============
+ * ① 区文字量少、无图标,整块都用 .sr-desc(12px / --text-tertiary)时糊成一片读不清。
+ * 解法是**拉开层级**而非换色:标签与说明留在浅色档,**值**提到正文档(--text-primary)。
+ * 色值仍全部取自 tokens.css,一个新色都没造。 */
+.extension-page .ep-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.extension-page .ep-k {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* 值:与 .sr-title 同字号,但字重正常 —— 是「读数」不是「标题」。
+ * 选择器带 .set-row .sr-desc 是为压过 SettingsPage.css 里 `.set-row .sr-desc` 的 tertiary 色
+ * (两者特异性相同时先后顺序说了算,不能赌打包顺序)。 */
+.extension-page .ep-v,
+.extension-page .set-row .sr-desc.ep-v {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* 行首图标:此前只有 .sr-icon 空占位(留白但没有可看的东西) */
+.extension-page .set-row .sr-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 行内控件组:三档暂停按钮 / 恢复接管(与设置页 .ec-inline 同参数) */
+.extension-page .ep-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

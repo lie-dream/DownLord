@@ -1,0 +1,30 @@
+# 换行策略:全仓统一 LF。
+#
+# 与既有约定一致:.editorconfig 的 `end_of_line = lf` + prettier 默认 `endOfLine: lf`。
+#
+# 背景(2026-07-28 实测):git 索引本已 100% LF(429 个文本文件全部 i/lf),但开发机的
+# `core.autocrlf=true` 会在 checkout 时把工作区文件转成 CRLF —— 55 个文件因此变成 CRLF,
+# 触发 eslint 的 prettier/prettier 规则逐行报 "Delete ␍",累计 23,566 条 warning。
+# 那些 warning 是**本地工作区假象**,已提交的内容一直是干净的 LF。
+#
+# 本文件把策略钉死在仓库侧:`eol=lf` 覆盖各开发机的 core.autocrlf 设置,
+# 使任何人 clone / checkout 后工作区都是 LF,不再依赖个人 git 配置。
+* text=auto eol=lf
+
+# 二进制:显式标注,绝不做换行转换或 diff
+*.png  binary
+*.ico  binary
+*.icns binary
+*.exe  binary
+*.dll  binary
+*.zip  binary
+*.7z   binary
+*.torrent binary
+*.db     binary
+*.sqlite binary
+
+# 上游许可/附加材料保留取得字节；仅此范围停用文本转换，不改全库 LF 策略。
+/resources/bin/aria2-LICENSE.txt -text
+/resources/bin/ffmpeg-LICENSE.txt -text
+/resources/bin/yt-dlp-LICENSE.txt -text
+/resources/bin/license-notices/** -text

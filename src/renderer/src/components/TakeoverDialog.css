@@ -1,0 +1,168 @@
+/**
+ * 接管确认框样式(v0.4 Task 4 · spec §4.4 · DESIGN §3)——**仅布局类,零新造色值**
+ * (色值全部取自 `tokens.css`,与 `DuplicateDialog` 的 `.dup-*`、`BtFileDialog` 的 `.bt-*` 同一先例)。
+ *
+ * 公共骨架(`.overlay` / `.dialog` / `.dialog-head` / `.dialog-body` / `.dialog-foot` /
+ * `.dialog-close` / `.field` / `.input` / `.path-row`)复用 `AddTaskDialog.css`,
+ * 按钮 / 胶囊复用 `buttons.css` —— 本文件只补「独立小窗口」这一形态特有的三件事。
+ *
+ * ⚠️ 所有覆写都**限定在 `.tk-dialog` / `.tk-overlay` 作用域内**:骨架类是全局的,
+ *    不加作用域会波及主窗口里每一个对话框。
+ */
+
+/*
+ * ① `.overlay` 在独立窗口内**保留但改职能**:窗口本身即「模态」,遮罩不再压暗背景,
+ *    只承担 `.dialog` 的居中与内边距布局(既有 `.overlay` 就是 flex 居中容器)。
+ *    故仅把背景覆写为 `transparent`(**`transparent` 不是色值**),不引入任何新色值。
+ */
+.tk-overlay {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/*
+ * ② 卡片铺满整个小窗口:既有 `.dialog` 是 520px 浮在遮罩上的卡片,这里窗口就是卡片,
+ *    故去掉宽度上限与描边 / 圆角 / 投影(窗口自身由 OS 画圆角与投影)。
+ */
+.tk-dialog {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/*
+ * ③ frameless 拖动:`frame: false` 的窗口默认不能拖,故把标题栏一条设为拖动区,
+ *    其内的按钮设回 `no-drag`(否则点不到)。**仅这两行,零色值**。
+ */
+.tk-dialog .dialog-head {
+  -webkit-app-region: drag;
+}
+
+.tk-dialog .dialog-head .dialog-close,
+.tk-dialog .dialog-head .icon-btn {
+  -webkit-app-region: no-drag;
+}
+
+/* 来源域名一行 + 大小胶囊 */
+.tk-origin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tk-host {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 大小胶囊:复用 `.pill` 基类,补中性底 / 次文字(token,与 DuplicateDialog / BtFileDialog 同源) */
+.tk-origin .pill {
+  flex-shrink: 0;
+  background: var(--bg-selected);
+  color: var(--text-secondary);
+}
+
+/* 诚实提示:弱化文本,与 `.save-hint` / `.up-note` 同族 */
+.tk-note {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/*
+ * 态 B 列表(spec §4.2)——**仅布局,零新造色值**,边框 / 分隔线 / 文字全取 token,
+ * 结构与 `DuplicateDialog` 的 `.dup-list` / `.dup-item` 同源(那是既有先例)。
+ * 高度不在这里限:`.dialog-body` 自带 `overflow-y:auto`,超 6 行由窗口高度封顶后天然滚动
+ * (同 `BtFileDialog` 处理上百文件的做法);窗口高度由主进程 `setContentHeight` 按条数算。
+ */
+.tk-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.tk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.tk-item + .tk-item {
+  border-top: 1px solid var(--divider);
+}
+
+.tk-item-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 跨域批次:每条前缀显示自己的 host(此时顶部那一行不存在) */
+.tk-item-host {
+  color: var(--text-tertiary);
+  margin-right: 6px;
+}
+
+.tk-item .pill {
+  flex-shrink: 0;
+  background: var(--bg-selected);
+  color: var(--text-secondary);
+}
+
+/* 逐条移除:**移除该条**,不是「取消该条的下载」——它早就被浏览器取消了 */
+.tk-x {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.tk-x:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tk-x svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+}
+
+/* 视频流条目替代文件名输入框的只读说明(v0.4 Task 5 · spec §4.6)。
+   **零新造色值** —— 复用既有 token,与 `.save-hint` 同一语气(说明而非输入)。
+   高度刻意贴近 `.input`,免得态 A 在 http / video 之间切换时窗口内容跳一下。 */
+.tk-readonly {
+  padding: 7px 10px;
+  border: 1px dashed var(--stroke-strong);
+  border-radius: var(--radius-control);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}

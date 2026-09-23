@@ -1,0 +1,64 @@
+/**
+ * 自定义标题栏样式 — 对齐原型 .titlebar,使用 tokens.css 变量。
+ *
+ * - 高 44px、横向布局,背景为 --bg-base。
+ * - 整体 `-webkit-app-region: drag` 可拖动窗口;按钮单独 `no-drag` 保持可点击。
+ * - close 按钮 hover 为危险色(#c42b1c)。
+ */
+
+.titlebar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px 0 14px;
+  background: var(--bg-base);
+  flex-shrink: 0;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.titlebar .app-logo {
+  width: 18px;
+  height: 18px;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+.titlebar .app-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-left: 10px;
+  letter-spacing: 0.2px;
+  color: var(--text-primary);
+}
+
+.titlebar .tb-spacer {
+  flex: 1;
+}
+
+.win-btn {
+  width: 46px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.12s;
+  border: none;
+  background: transparent;
+  -webkit-app-region: no-drag;
+}
+
+.win-btn:hover {
+  background: var(--bg-hover);
+}
+
+.win-btn.win-btn-close:hover {
+  background: #c42b1c;
+  color: #fff;
+}
+
+.win-btn svg {
+  width: 11px;
+  height: 11px;
+}
