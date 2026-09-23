@@ -15,6 +15,7 @@ import { createServer as createNetServer } from 'node:net'
 
 import { ExtensionChannelService } from './extensionChannelService'
 import { nodeHttpFactory } from './nodeHttpFactory'
+import { validateChannelPort } from './portValidation'
 import type { ChannelLogger } from './channelServer'
 import type { JsonConfigStoreFs } from '../config/jsonConfigStore'
 import { TakeoverService, type TakeoverWindowHandle } from '../takeover/takeoverService'
@@ -36,16 +37,23 @@ const SENTINEL_DOMAIN = 'sentinel-site.example'
 const PAGE_URL = `https://${SENTINEL_DOMAIN}/video/BV1x`
 
 /** 取一个当下空闲的回环端口(`port: 0` 拿到后立刻释放)—— 避免与开发机上真在跑的 52330 撞车 */
-function pickFreePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const s = createNetServer()
-    s.on('error', reject)
-    s.listen(0, '127.0.0.1', () => {
-      const addr = s.address()
-      const port = typeof addr === 'object' && addr !== null ? addr.port : 0
-      s.close(() => resolve(port))
+async function pickFreePort(): Promise<number> {
+  // OS 分配的临时端口可能落在通道端口校验拒绝的 BT / DHT 保留段 52301–52320
+  //(validateChannelPort → reserved_bt,setConfig 不起服务;真 CI 的 runner 2026-09-23 撞到过),
+  // 故只接受能通过校验的端口,连续 64 次都不行才放弃。
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const port = await new Promise<number>((resolve, reject) => {
+      const s = createNetServer()
+      s.on('error', reject)
+      s.listen(0, '127.0.0.1', () => {
+        const addr = s.address()
+        const picked = typeof addr === 'object' && addr !== null ? addr.port : 0
+        s.close(() => resolve(picked))
+      })
     })
-  })
+    if (validateChannelPort(port).ok) return port
+  }
+  throw new Error('pickFreePort: 64 次取到的临时端口都被 validateChannelPort 拒绝')
 }
 
 /** 捕获式 logger —— I-C4 的全部证据就是这个数组 */

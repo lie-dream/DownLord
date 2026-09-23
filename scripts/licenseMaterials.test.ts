@@ -421,10 +421,23 @@ const baseline = snapshot()
 test('Phase1/local materials, semantic boundaries and single-source copy contracts', () => {
   assert.deepEqual(inspect(baseline), { code: 0, issues: [] })
 })
-test('Phase1/bundled engine bytes remain the verified existing binaries', () => {
-  for (const e of engines)
-    assert.equal(digest(readFileSync(join(root, bin, e.file))), e.sha256, e.file)
-})
+// 三枚引擎 EXE 是 git 忽略的构建输入,不在源码树里(真 CI 的全新 checkout 没有它们,2026-09-23 实证);
+// 缺席时显式 skip 并写明原因,不静默;字节核对由本机与打包期的包内检查承担。
+const missingEngines = engines
+  .filter((e) => !existsSync(join(root, bin, e.file)))
+  .map((e) => e.file)
+test(
+  'Phase1/bundled engine bytes remain the verified existing binaries',
+  {
+    skip: missingEngines.length
+      ? `engine binaries are git-ignored build inputs and are absent here: ${missingEngines.join(', ')}`
+      : false
+  },
+  () => {
+    for (const e of engines)
+      assert.equal(digest(readFileSync(join(root, bin, e.file))), e.sha256, e.file)
+  }
+)
 
 // Fixtures are small on-disk overlays of the read-only source snapshot; unmodified 11 MB docs
 // are shared in memory, never edited/hard-linked. Each result records its base manifest hash.

@@ -15,6 +15,7 @@ import { request as httpRequest } from 'node:http'
 
 import { ExtensionChannelService } from '../extensionChannel/extensionChannelService'
 import { nodeHttpFactory } from '../extensionChannel/nodeHttpFactory'
+import { validateChannelPort } from '../extensionChannel/portValidation'
 import type { ChannelLogger } from '../extensionChannel/channelServer'
 import type { JsonConfigStoreFs } from '../config/jsonConfigStore'
 import { IpcChannel, type AddTaskInput, type TakeoverBatch, type TakeoverSettingsView } from '../../shared/ipc'
@@ -82,16 +83,23 @@ function post(port: number, token: string, body: string): Promise<HttpReply> {
   })
 }
 
-function pickFreePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const s = createNetServer()
-    s.on('error', reject)
-    s.listen(0, '127.0.0.1', () => {
-      const addr = s.address()
-      const port = typeof addr === 'object' && addr !== null ? addr.port : 0
-      s.close(() => resolve(port))
+async function pickFreePort(): Promise<number> {
+  // OS 分配的临时端口可能落在通道端口校验拒绝的 BT / DHT 保留段 52301–52320
+  //(validateChannelPort → reserved_bt,setConfig 不起服务;真 CI 的 runner 2026-09-23 撞到过),
+  // 故只接受能通过校验的端口,连续 64 次都不行才放弃。
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const port = await new Promise<number>((resolve, reject) => {
+      const s = createNetServer()
+      s.on('error', reject)
+      s.listen(0, '127.0.0.1', () => {
+        const addr = s.address()
+        const picked = typeof addr === 'object' && addr !== null ? addr.port : 0
+        s.close(() => resolve(picked))
+      })
     })
-  })
+    if (validateChannelPort(port).ok) return port
+  }
+  throw new Error('pickFreePort: 64 次取到的临时端口都被 validateChannelPort 拒绝')
 }
 
 /** 记录式假窗口。**行为按 `TakeoverWindowHandle` 的契约实现**(尤其 `showOnce` 只生效一次) */
@@ -247,7 +255,12 @@ async function makeHarness(
 
   const port = await pickFreePort()
   await channel.init()
-  await channel.setConfig({ enabled: true, port })
+  const channelStatus = await channel.setConfig({ enabled: true, port })
+  assert.equal(
+    channelStatus.service,
+    'listening',
+    `前置:通道必须真的起来了(port ${port},lastError ${channelStatus.lastError})`
+  )
 
   return {
     takeover,
